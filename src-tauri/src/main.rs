@@ -20,7 +20,12 @@ fn main() {
             Database::default().init(app_data_dir)?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![new_team, new_participant])
+        .invoke_handler(tauri::generate_handler![
+            new_team,
+            new_participant,
+            new_event,
+            new_event_entry
+        ])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application.");
 }
@@ -49,6 +54,34 @@ fn new_participant(
     let database = connect_to_db(app_handle);
     database
         .new_participant(first_name, last_name, team_id)
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
+fn new_event(
+    app_handle: tauri::AppHandle,
+    name: &str,
+    event_type: &str,
+) -> core::result::Result<(), String> {
+    let database = connect_to_db(app_handle);
+    database
+        .new_event(name, event_type)
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
+fn new_event_entry(
+    app_handle: tauri::AppHandle,
+    team_id: i32,
+    event_id: i32,
+) -> core::result::Result<(), String> {
+    let database = connect_to_db(app_handle);
+    database
+        .new_event_entry(team_id, event_id)
         .map_err(|e| e.to_string())?;
 
     Ok(())

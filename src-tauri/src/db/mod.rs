@@ -7,7 +7,9 @@ use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use std::fs::File;
 use std::path::PathBuf;
-use structs::{NewParticipant, NewTeam, Participant, Team};
+use structs::{
+    Event, EventEntry, NewEvent, NewEventEntry, NewParticipant, NewTeam, Participant, Team,
+};
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -95,43 +97,42 @@ impl Database {
             .values(&new_participant)
             .returning(Participant::as_returning())
             .get_result::<Participant>(&mut connection)
-            .map_err(|_| Error::DatabaseNewEntryFailure("Participants".into()))?;
+            .map_err(|_| Error::DatabaseNewEntryFailure("Participant".into()))?;
 
         Ok(db_participant)
     }
 
-    pub fn new_event(&self, name: &str, event_type: &str) -> Result<Participant> {
-        use schema::participant;
+    pub fn new_event(&self, name: &str, event_type: &str) -> Result<Event> {
+        use schema::event;
 
-        let mut connection = self.connect()?;
-        let new_participant = NewParticipant {
-            name,
-            event_type,
-            first_name,
-            last_name,
-            team_id,
+        let event_type = match event_type {
+            "ACADEMICS" | "SPORTS" => event_type,
+            _ => return Err(Error::IncorrectEventType(event_type.into())),
         };
 
-        let db_participant = diesel::insert_into(participant::table)
-            .values(&new_participant)
-            .returning(Participant::as_returning())
-            .get_result::<Participant>(&mut connection)
-            .map_err(|_| Error::DatabaseNewEntryFailure("Participants".into()))?;
+        let mut connection = self.connect()?;
+        let new_event = NewEvent { name, event_type };
 
-        Ok(db_participant)
+        let db_event = diesel::insert_into(event::table)
+            .values(&new_event)
+            .returning(Event::as_returning())
+            .get_result::<Event>(&mut connection)
+            .map_err(|_| Error::DatabaseNewEntryFailure("Event".into()))?;
+
+        Ok(db_event)
     }
 
-    pub fn new_event_entry(&self, team_id: i32, event_id: i32) -> Result<EventEntries> {
-        use schema::participant;
+    pub fn new_event_entry(&self, team_id: i32, event_id: i32) -> Result<EventEntry> {
+        use schema::event_entry;
 
         let mut connection = self.connect()?;
         let new_event_entry = NewEventEntry { team_id, event_id };
 
-        let db_event_entry = diesel::insert_into(participant::table)
+        let db_event_entry = diesel::insert_into(event_entry::table)
             .values(&new_event_entry)
-            .returning(Participant::as_returning())
-            .get_result::<Participant>(&mut connection)
-            .map_err(|_| Error::DatabaseNewEntryFailure("Participants".into()))?;
+            .returning(EventEntry::as_returning())
+            .get_result::<EventEntry>(&mut connection)
+            .map_err(|_| Error::DatabaseNewEntryFailure("EventEntry".into()))?;
 
         Ok(db_event_entry)
     }

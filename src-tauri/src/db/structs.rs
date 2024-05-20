@@ -48,9 +48,9 @@ pub struct Event {
 
 #[derive(Insertable)]
 #[diesel(table_name = event)]
-pub struct NewEvent {
-    pub name: String,
-    pub event_type: String,
+pub struct NewEvent<'a> {
+    pub name: &'a str,
+    pub event_type: &'a str,
 }
 
 #[derive(Queryable, Selectable)]

@@ -1,8 +1,9 @@
 use crate::db::schema::*;
 use diesel::prelude::*;
 use diesel::sqlite::Sqlite;
+use serde::Serialize;
 
-#[derive(Queryable, Selectable)]
+#[derive(Serialize, Debug, Queryable, Selectable)]
 #[diesel(table_name = participant)]
 #[diesel(check_for_backend(Sqlite))]
 pub struct Participant {
@@ -12,7 +13,7 @@ pub struct Participant {
     pub last_name: String,
 }
 
-#[derive(Insertable, Debug)]
+#[derive(Serialize, Debug, Insertable)]
 #[diesel(table_name = participant)]
 pub struct NewParticipant<'a> {
     pub first_name: &'a str,
@@ -20,7 +21,7 @@ pub struct NewParticipant<'a> {
     pub team_id: i32,
 }
 
-#[derive(Queryable, Selectable)]
+#[derive(Serialize, Debug, Queryable, Selectable)]
 #[diesel(table_name = team)]
 #[diesel(check_for_backend(Sqlite))]
 pub struct Team {
@@ -30,14 +31,14 @@ pub struct Team {
     pub points: i32,
 }
 
-#[derive(Insertable)]
+#[derive(Serialize, Debug, Insertable)]
 #[diesel(table_name = team)]
 pub struct NewTeam<'a> {
     pub name: &'a str,
     pub individual: bool,
 }
 
-#[derive(Queryable, Selectable)]
+#[derive(Serialize, Debug, Queryable, Selectable)]
 #[diesel(table_name = event)]
 #[diesel(check_for_backend(Sqlite))]
 pub struct Event {
@@ -46,14 +47,14 @@ pub struct Event {
     pub event_type: String,
 }
 
-#[derive(Insertable)]
+#[derive(Serialize, Debug, Insertable)]
 #[diesel(table_name = event)]
 pub struct NewEvent<'a> {
     pub name: &'a str,
     pub event_type: &'a str,
 }
 
-#[derive(Queryable, Selectable)]
+#[derive(Serialize, Debug, Queryable, Selectable)]
 #[diesel(table_name = event_entry)]
 #[diesel(check_for_backend(Sqlite))]
 pub struct EventEntry {
@@ -61,7 +62,7 @@ pub struct EventEntry {
     pub event_id: i32,
 }
 
-#[derive(Insertable)]
+#[derive(Serialize, Debug, Insertable)]
 #[diesel(table_name = event_entry)]
 pub struct NewEventEntry {
     pub team_id: i32,

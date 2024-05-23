@@ -9,7 +9,7 @@ CREATE TABLE team (
     id INTEGER PRIMARY KEY NOT NULL,
     name VARCHAR(255) UNIQUE NOT NULL,
     individual BOOLEAN NOT NULL,
-    points INTEGER NOT NULL
+    points INTEGER DEFAULT 0
 );
 
 CREATE TABLE event (

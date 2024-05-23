@@ -5,7 +5,7 @@ use crate::prelude::*;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-use std::fs::File;
+use std::fs;
 use std::path::PathBuf;
 use structs::{
     Event, EventEntry, NewEvent, NewEventEntry, NewParticipant, NewTeam, Participant, Team,
@@ -48,7 +48,7 @@ impl Database {
             }
         };
 
-        SqliteConnection::establish(path).map_err(Error::DatabaseConnectionFailure)
+        SqliteConnection::establish(path).map_err(|_| Error::DatabaseConnectionFailure)
     }
 
     fn run_migrations(&self) -> Result<()> {
@@ -56,7 +56,7 @@ impl Database {
         let mut connection = self.connect()?;
         connection
             .run_pending_migrations(MIGRATIONS)
-            .map_err(Error::DatabaseMigrationFailure)?;
+            .map_err(|_| Error::DatabaseMigrationFailure)?;
 
         Ok(())
     }
@@ -72,8 +72,8 @@ impl Database {
         let db_team = diesel::insert_into(team::table)
             .values(&new_team)
             .returning(Team::as_returning())
-            .get_result::<Team>(&mut connection)
-            .map_err(|_| Error::DatabaseNewEntryFailure("Team".into()))?;
+            .get_result(&mut connection)
+            .map_err(|e| Error::DatabaseNewEntryFailure(e.to_string()))?;
 
         Ok(db_team)
     }
@@ -96,7 +96,7 @@ impl Database {
         let db_participant = diesel::insert_into(participant::table)
             .values(&new_participant)
             .returning(Participant::as_returning())
-            .get_result::<Participant>(&mut connection)
+            .get_result(&mut connection)
             .map_err(|_| Error::DatabaseNewEntryFailure("Participant".into()))?;
 
         Ok(db_participant)
@@ -142,9 +142,9 @@ impl Database {
     fn ensure_db_dir_exists(&self) -> Result<()> {
         let dir = &self.path.parent().unwrap();
         if !dir.exists() {
-            File::create(dir).map_err(|_| {
+            fs::create_dir(dir).map_err(|_| {
                 let dir = &dir.to_str().unwrap_or("<Failed to unwrap path>");
-                Error::DatabaseCreationError(f!("Failed to create database directory at {dir}"))
+                Error::DatabaseCreation(f!("Failed to create database directory at {dir}"))
             })?;
         }
 
@@ -156,9 +156,9 @@ impl Database {
         let path = &self.path;
 
         if !path.exists() {
-            File::create(path).map_err(|_| {
+            fs::File::create(path).map_err(|_| {
                 let path = &path.to_str().unwrap_or("<Failed to unwrap path>");
-                Error::DatabaseCreationError(f!("Failed to create database file at {path}"))
+                Error::DatabaseCreation(f!("Failed to create database file at {path}"))
             })?;
         }
 

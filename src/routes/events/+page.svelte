@@ -1,36 +1,13 @@
 <script lang="ts">
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
-	import {
-		// type NewEvent,
-		type Event,
-		// new_event as new_event_inner,
-		get_events
-	} from '$lib';
-
-	// $: event = {
-	// 	name: '',
-	// 	event_type: ''
-	// } as NewEvent;
+	import { type Event, get_events } from '$lib';
 
 	$: new_events = [] as Event[];
 
 	function edit_event(event: Event) {
 		alert(`Editing event ${event.name}`);
 	}
-
-	// async function new_event() {
-	// 	try {
-	// 		const db_event = await new_event_inner(event);
-	// 		new_events = [...new_events, db_event!];
-
-	// 		event = { name: '', event_type: '' };
-	// 	} catch (e) {
-	// 		const msg = (e as Record<string, string>).DatabaseNewEntryFailure;
-	// 		console.error(e);
-	// 		return alert(`Failed to add event.\n${msg}`);
-	// 	}
-	// }
 </script>
 
 <Banner title="Events" subtitle="Click on an event to edit it." />
@@ -54,23 +31,6 @@
 		<pre>{error}</pre>
 	{/await}
 </Table>
-
-<!-- <form on:submit={new_event}>
-	<label>
-		Event name
-		<input type="text" bind:value={event.name} />
-	</label>
-	<label>
-		Event type
-		<select name="type" bind:value={event.event_type}>
-			<option value="ACADEMIC">Academic</option>
-			<option value="SPORT">Sports</option>
-		</select>
-	</label>
-	<input type="submit" value="Add" />
-
-	<main class="events">
-</form> -->
 
 <style lang="scss">
 	.edit {

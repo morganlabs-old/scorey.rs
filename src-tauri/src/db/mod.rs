@@ -107,18 +107,24 @@ impl Database {
         use schema::event;
 
         let event_type = match event_type {
-            "ACADEMICS" | "SPORTS" => event_type,
+            "ACADEMIC" | "SPORT" => event_type,
             _ => return Err(Error::IncorrectEventType(event_type.into())),
         };
 
         let mut connection = self.connect()?;
         let new_event = NewEvent { name, event_type };
 
-        let db_event = diesel::insert_into(event::table)
+        let mut db_event = diesel::insert_into(event::table)
             .values(&new_event)
             .returning(Event::as_returning())
             .get_result::<Event>(&mut connection)
             .map_err(|e| Error::DatabaseNewEntryFailure(e.to_string()))?;
+
+        if db_event.event_type == "ACADEMIC" {
+            db_event.event_type = "Academics".into()
+        } else if db_event.event_type == "SPORT" {
+            db_event.event_type = "Sports".into()
+        };
 
         Ok(db_event)
     }
@@ -183,6 +189,30 @@ impl Database {
             .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
 
         Ok(participants)
+    }
+
+    pub fn get_events(&self) -> Result<Vec<Event>> {
+        use schema::event::dsl::*;
+
+        let mut connection = self.connect()?;
+        let events = event
+            .load::<Event>(&mut connection)
+            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
+
+        let events = events
+            .into_iter()
+            .map(|mut e| {
+                if e.event_type == "ACADEMIC" {
+                    e.event_type = "Academics".into()
+                } else if e.event_type == "SPORT" {
+                    e.event_type = "Sports".into()
+                };
+
+                e
+            })
+            .collect();
+
+        Ok(events)
     }
 
     // Ensure Stuff Happens

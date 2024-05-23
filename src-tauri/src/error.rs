@@ -19,7 +19,7 @@ pub enum Error {
     #[error("Failed to create a new entry in the SQLite Database: {0}")]
     DatabaseNewEntryFailure(String),
 
-    #[error("Event type {0} is incorrect. Allowed values are ACADEMICS and SPORTS.")]
+    #[error("Event type {0} is incorrect. Allowed values are ACADEMIC and SPORT.")]
     IncorrectEventType(String),
 
     #[error("Failed to query database.")]

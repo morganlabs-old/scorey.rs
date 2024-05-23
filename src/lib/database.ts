@@ -10,6 +10,11 @@ export async function get_team(team_id: number) {
 	return teams;
 }
 
+export async function get_events() {
+	const events = await invoke<Event[]>('get_events');
+	return events;
+}
+
 export async function get_participants() {
 	const participants = await invoke<Participant[]>('get_participants');
 	console.log(participants);
@@ -51,6 +56,14 @@ export async function new_participant(
 	};
 }
 
+export async function new_event(event: NewEvent) {
+	const { name, event_type } = event;
+
+	const db_event = await invoke<Event>('new_event', { name, event_type }).catch((e) => alert(e));
+
+	return db_event;
+}
+
 export type Team = {
 	id: number;
 	name: string;
@@ -68,6 +81,12 @@ export type Participant = {
 	team_points?: number;
 };
 
+export type Event = {
+	id: number;
+	name: string;
+	type: string;
+};
+
 export type NewTeam = {
 	name: string;
 	individual: boolean;
@@ -76,4 +95,9 @@ export type NewTeam = {
 export type NewParticipant = {
 	first_name: string;
 	last_name: string;
+};
+
+export type NewEvent = {
+	name: string;
+	event_type: string;
 };

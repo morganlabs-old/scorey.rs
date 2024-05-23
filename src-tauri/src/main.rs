@@ -29,7 +29,8 @@ fn main() {
             new_event_entry,
             get_teams,
             get_team,
-            get_participants
+            get_participants,
+            get_events
         ])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application.");
@@ -109,6 +110,13 @@ fn get_team(app_handle: tauri::AppHandle, team_id: i32) -> Result<Team, String> 
     let database = connect_to_db(app_handle);
     let team = database.get_team(team_id).map_err(|e| e.to_string())?;
     Ok(team)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn get_events(app_handle: tauri::AppHandle) -> Result<Vec<Event>, String> {
+    let database = connect_to_db(app_handle);
+    let events = database.get_events().map_err(|e| e.to_string())?;
+    Ok(events)
 }
 
 fn connect_to_db(app_handle: tauri::AppHandle) -> Database {

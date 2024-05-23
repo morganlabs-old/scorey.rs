@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let headings: string[];
-	export let highlighted_columns: number[] = [1];
+	export let highlighted_columns: number[] = [0];
 </script>
 
 <table class="table">

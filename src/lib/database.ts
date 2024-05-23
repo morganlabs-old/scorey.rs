@@ -84,7 +84,7 @@ export type Participant = {
 export type Event = {
 	id: number;
 	name: string;
-	type: string;
+	event_type: string;
 };
 
 export type NewTeam = {

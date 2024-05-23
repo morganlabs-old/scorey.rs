@@ -1,48 +1,52 @@
 <script lang="ts">
+	import Table from '$components/Table.svelte';
+	import Banner from '$components/layout/Banner.svelte';
 	import {
 		type Participant,
-		type NewParticipant,
-		new_participant as new_participant_inner,
-		get_teams,
+		// type NewParticipant,
+		// new_participant as new_participant_inner,
+		// get_teams,
 		get_participants
 	} from '$lib';
 
-	$: participant = {
-		first_name: '',
-		last_name: '',
-		team_id: ''
-	} as NewParticipant & { team_id: string };
+	// $: participant = {
+	// 	first_name: '',
+	// 	last_name: '',
+	// 	team_id: ''
+	// } as NewParticipant & { team_id: string };
 
 	$: new_participants = [] as Participant[];
 
-	async function new_participant() {
-		try {
-			const db_participant = await new_participant_inner(participant, +participant.team_id);
-			new_participants = [...new_participants, db_participant!];
-
-			participant = { first_name: '', last_name: '', team_id: '' };
-		} catch (e) {
-			const msg = (e as Record<string, string>).DatabaseNewEntryFailure;
-			console.error(e);
-			return alert(`Failed to add team.\n${msg}`);
-		}
+	function edit_participant(participant: Participant) {
+		alert(`Editing participant ${participant.first_name}`);
 	}
+
+	// async function new_participant() {
+	// 	try {
+	// 		const db_participant = await new_participant_inner(participant, +participant.team_id);
+	// 		new_participants = [...new_participants, db_participant!];
+
+	// 		participant = { first_name: '', last_name: '', team_id: '' };
+	// 	} catch (e) {
+	// 		const msg = (e as Record<string, string>).DatabaseNewEntryFailure;
+	// 		console.error(e);
+	// 		return alert(`Failed to add team.\n${msg}`);
+	// 	}
+	// }
 </script>
 
-<h1>Participant</h1>
-
-<h2>Add a new participant</h2>
-<form on:submit={new_participant}>
+<Banner title="Participants" subtitle="Click on a participant to edit them." />
+<!-- <form on:submit={new_participant}>
 	<label>
-		First name
+		first name
 		<input type="text" bind:value={participant.first_name} />
 	</label>
 	<label>
-		Last name
+		last name
 		<input type="text" bind:value={participant.last_name} />
 	</label>
 	<label>
-		Team
+		team
 		<select name="team" bind:value={participant.team_id}>
 			{#await get_teams() then teams}
 				{#each teams as team}
@@ -52,47 +56,48 @@
 				{/each}
 			{:catch error}
 				<p class="error">
-					Failed to get teams...<br />
+					failed to get teams...<br />
 				</p>
 				<pre>{error}</pre>
 			{/await}
 		</select>
 	</label>
-	<input type="submit" value="Add" />
+	<input type="submit" value="add" />
+</form> -->
 
-	<main class="participantss">
-		{#await get_participants()}
-			<p class="awaiting">Getting participants...</p>
-		{:then participants}
-			<table>
-				<thead>
-					<th scope="col">ID</th>
-					<th scope="col">First name</th>
-					<th scope="col">Last name</th>
-					<th scope="col">Team ID</th>
-					<th scope="col">Team name</th>
-					<th scope="col">Individual?</th>
-				</thead>
-				<tbody>
-					{#each [participants, new_participants].flat() as participant}
-						<tr>
-							<th class="id">{participant.id}</th>
-							<td class="first_name">{participant.first_name}</td>
-							<td class="last_name">{participant.last_name}</td>
-							<td class="team_id">{participant.team_id}</td>
-							<td class="team_name">{participant.team_name}</td>
-							<td class="individual">
-								<input type="checkbox" checked={participant.team_individual} disabled />
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{:catch error}
-			<p class="error">
-				Failed to get teams...<br />
-			</p>
-			<pre>{error}</pre>
-		{/await}
-	</main>
-</form>
+{#await get_participants()}
+	<p class="awaiting">Getting participants...</p>
+{:then participants}
+	<Table
+		headings={['ID', 'First Name', 'Last Name', 'Team ID', 'Team Name', 'Individual?']}
+		highlighted_columns={[1, 2]}
+	>
+		{#each [participants, new_participants].flat() as participant}
+			<tr>
+				<td class="id">{participant.id}</td>
+				<th class="first_name">{participant.first_name}</th>
+				<th class="last_name">{participant.last_name}</th>
+				<td class="team_id">{participant.team_id}</td>
+				<td class="team_name">{participant.team_name}</td>
+				<th class="individual">
+					<input type="checkbox" checked={participant.team_individual} on:click|preventDefault />
+				</th>
+				<th class="edit"
+					><button class="edit_btn" on:click={() => edit_participant(participant)}>Edit</button>
+				</th>
+			</tr>
+		{/each}
+	</Table>
+{:catch error}
+	<p class="error">
+		Failed to get teams...<br />
+	</p>
+	<pre>{error}</pre>
+{/await}
+
+<style lang="scss">
+	.edit {
+		display: flex;
+		justify-content: center;
+	}
+</style>

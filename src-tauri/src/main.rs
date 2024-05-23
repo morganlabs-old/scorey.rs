@@ -9,6 +9,9 @@ use db::Database;
 use error::Error;
 use std::path::PathBuf;
 use std::process::exit;
+use tauri::Manager;
+#[allow(unused_imports)]
+use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
 fn main() {
     tauri::Builder::default()
@@ -18,6 +21,16 @@ fn main() {
                 Some(d) => d,
                 None => panic!("Failed to get application data directory!"),
             };
+
+            let window = app_handle.get_window("main").unwrap();
+
+            #[cfg(target_os = "macos")]
+            apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, Some(10.0))
+                .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+
+            #[cfg(target_os = "windows")]
+            apply_blur(&window, Some((18, 18, 18, 125)))
+                .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
             Database::default().init(app_data_dir)?;
             Ok(())

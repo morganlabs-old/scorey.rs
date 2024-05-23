@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Banner from '$components/layout/Banner.svelte';
 	import { get_teams } from '$lib';
 
 	async function get_teams_and_sort() {
@@ -8,7 +9,7 @@
 	}
 </script>
 
-<h1>Leaderboard</h1>
+<Banner title="Leaderboard" subtitle="See whose winning!"></Banner>
 {#await get_teams_and_sort()}
 	<p>loading...</p>
 {:then teams}
@@ -20,7 +21,7 @@
 		</thead>
 		<tbody>
 			{#each teams as team}
-				<tr>
+				<tr class="row">
 					<th class="id">{team.id}</th>
 					<td class="name">{team.name}</td>
 					<td class="points">{team.points}</td>

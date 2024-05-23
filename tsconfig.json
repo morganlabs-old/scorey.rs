@@ -10,12 +10,14 @@
 		"sourceMap": true,
 		"strict": true,
 		"moduleResolution": "bundler",
-        "baseUrl": ".",
-        "paths": {
-            "$lib": ["src/lib/index.ts"],
-            "$styles": ["src/lib/styles"],
-            "$styles/*": ["src/lib/styles/*"],
-        }
+		"baseUrl": ".",
+		"paths": {
+			"$lib": ["src/lib/index.ts"],
+			"$components": ["src/lib/components"],
+			"$components/*": ["src/lib/components/*"],
+			"$styles": ["src/lib/styles"],
+			"$styles/*": ["src/lib/styles/*"]
+		}
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	// except $lib which is handled by https://kit.svelte.dev/docs/configuration#files

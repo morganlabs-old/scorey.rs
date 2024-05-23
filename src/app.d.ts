@@ -8,6 +8,11 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+	type Page = {
+		title: string;
+		href: string;
+		icon: string;
+	};
 }
 
 export {};

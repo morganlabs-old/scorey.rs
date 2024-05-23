@@ -3,6 +3,17 @@ use diesel::prelude::*;
 use diesel::sqlite::Sqlite;
 use serde::Serialize;
 
+#[derive(Serialize, Debug, Queryable)]
+pub struct ParticipantAndTeam {
+    pub id: i32,
+    pub first_name: String,
+    pub last_name: String,
+    pub team_id: i32,
+    pub team_name: Option<String>,
+    pub team_individual: Option<bool>,
+    pub team_points: Option<i32>,
+}
+
 #[derive(Serialize, Debug, Queryable, Selectable)]
 #[diesel(table_name = participant)]
 #[diesel(check_for_backend(Sqlite))]

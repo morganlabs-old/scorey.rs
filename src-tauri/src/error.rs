@@ -21,4 +21,7 @@ pub enum Error {
 
     #[error("Event type {0} is incorrect. Allowed values are ACADEMICS and SPORTS.")]
     IncorrectEventType(String),
+
+    #[error("Failed to query database.")]
+    DatabaseQueryFailure(String),
 }

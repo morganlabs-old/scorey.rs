@@ -33,6 +33,10 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(event_entry -> event (event_id));
+diesel::joinable!(event_entry -> team (team_id));
+diesel::joinable!(participant -> team (team_id));
+
 diesel::allow_tables_to_appear_in_same_query!(
     event,
     event_entry,

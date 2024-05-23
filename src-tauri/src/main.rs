@@ -4,7 +4,7 @@ mod db;
 mod error;
 mod prelude;
 
-use db::structs::{Event, EventEntry, Participant, Team};
+use db::structs::{Event, EventEntry, Participant, ParticipantAndTeam, Team};
 use db::Database;
 use error::Error;
 use std::path::PathBuf;
@@ -26,7 +26,10 @@ fn main() {
             new_team,
             new_participant,
             new_event,
-            new_event_entry
+            new_event_entry,
+            get_teams,
+            get_team,
+            get_participants
         ])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application.");
@@ -85,6 +88,27 @@ fn new_event_entry(
         .map_err(|e| e.to_string())?;
 
     Ok(new_event_entry)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn get_participants(app_handle: tauri::AppHandle) -> Result<Vec<ParticipantAndTeam>, String> {
+    let database = connect_to_db(app_handle);
+    let participants = database.get_participants().map_err(|e| e.to_string())?;
+    Ok(participants)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn get_teams(app_handle: tauri::AppHandle) -> Result<Vec<Team>, String> {
+    let database = connect_to_db(app_handle);
+    let teams = database.get_teams().map_err(|e| e.to_string())?;
+    Ok(teams)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn get_team(app_handle: tauri::AppHandle, team_id: i32) -> Result<Team, String> {
+    let database = connect_to_db(app_handle);
+    let team = database.get_team(team_id).map_err(|e| e.to_string())?;
+    Ok(team)
 }
 
 fn connect_to_db(app_handle: tauri::AppHandle) -> Database {

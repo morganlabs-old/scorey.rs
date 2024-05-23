@@ -8,7 +8,8 @@ use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use std::fs;
 use std::path::PathBuf;
 use structs::{
-    Event, EventEntry, NewEvent, NewEventEntry, NewParticipant, NewTeam, Participant, Team,
+    Event, EventEntry, NewEvent, NewEventEntry, NewParticipant, NewTeam, Participant,
+    ParticipantAndTeam, Team,
 };
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
@@ -97,7 +98,7 @@ impl Database {
             .values(&new_participant)
             .returning(Participant::as_returning())
             .get_result(&mut connection)
-            .map_err(|_| Error::DatabaseNewEntryFailure("Participant".into()))?;
+            .map_err(|e| Error::DatabaseNewEntryFailure(e.to_string()))?;
 
         Ok(db_participant)
     }
@@ -117,7 +118,7 @@ impl Database {
             .values(&new_event)
             .returning(Event::as_returning())
             .get_result::<Event>(&mut connection)
-            .map_err(|_| Error::DatabaseNewEntryFailure("Event".into()))?;
+            .map_err(|e| Error::DatabaseNewEntryFailure(e.to_string()))?;
 
         Ok(db_event)
     }
@@ -132,9 +133,56 @@ impl Database {
             .values(&new_event_entry)
             .returning(EventEntry::as_returning())
             .get_result::<EventEntry>(&mut connection)
-            .map_err(|_| Error::DatabaseNewEntryFailure("EventEntry".into()))?;
+            .map_err(|e| Error::DatabaseNewEntryFailure(e.to_string()))?;
 
         Ok(db_event_entry)
+    }
+
+    // Get Items
+
+    pub fn get_teams(&self) -> Result<Vec<Team>> {
+        use schema::team::dsl::*;
+
+        let mut connection = self.connect()?;
+        let teams = team
+            .load::<Team>(&mut connection)
+            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
+
+        Ok(teams)
+    }
+
+    pub fn get_team(&self, team_id: i32) -> Result<Team> {
+        use schema::team::dsl::*;
+
+        let mut connection = self.connect()?;
+        let db_team = team
+            .filter(id.eq(team_id))
+            .first::<Team>(&mut connection)
+            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
+
+        Ok(db_team)
+    }
+
+    pub fn get_participants(&self) -> Result<Vec<ParticipantAndTeam>> {
+        use schema::participant::dsl::*;
+        use schema::team::dsl as team_dsl;
+
+        let mut connection = self.connect()?;
+        let participants = participant
+            .left_join(team_dsl::team.on(team_dsl::id.eq(team_id)))
+            .select((
+                id,
+                first_name,
+                last_name,
+                team_id,
+                team_dsl::name.nullable(),
+                team_dsl::individual.nullable(),
+                team_dsl::points.nullable(),
+            ))
+            .load::<ParticipantAndTeam>(&mut connection)
+            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
+
+        Ok(participants)
     }
 
     // Ensure Stuff Happens

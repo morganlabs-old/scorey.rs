@@ -1,56 +1,54 @@
 <script lang="ts">
-	import { invoke } from '@tauri-apps/api/tauri';
-	import { type Team, type Participant } from '$lib';
+	import {
+		type Team,
+		type NewTeam,
+		type NewParticipant,
+		new_team,
+		new_participant,
+		get_teams
+	} from '$lib';
 
 	$: team = {
 		name: '',
 		individual: false
-	};
+	} as NewTeam;
 
 	$: participant = {
 		first_name: '',
 		last_name: ''
-	};
+	} as NewParticipant;
 
-	async function new_team() {
-		const { name, individual } = team;
+	$: new_teams = [] as Team[];
 
+	async function new_team_and_participant() {
 		try {
-			const db_team = (await invoke('new_team', { name, individual })) as Team;
+			const db_team = await new_team(team);
+			new_teams = [...new_teams, db_team!];
 
-			if (individual) {
-				const db_participant = await new_participant(db_team.id).catch((e) =>
-					alert('Failed to add participant. Please try again.')
-				);
-				console.log(db_participant);
+			if (team.individual) {
+				try {
+					await new_participant(participant, db_team!.id);
+				} catch (e) {
+					const msg = (e as Record<string, string>).DatabaseNewEntryFailure;
+					console.error(e);
+					return alert(`Failed to add participant.\n${msg}`);
+				}
 			}
+
+			team = { name: '', individual: team.individual };
+			participant = { first_name: '', last_name: '' };
 		} catch (e) {
 			const msg = (e as Record<string, string>).DatabaseNewEntryFailure;
 			console.error(e);
 			return alert(`Failed to add team.\n${msg}`);
 		}
-
-		team = { name: '', individual };
-		participant = { first_name: '', last_name: '' };
-	}
-
-	async function new_participant(team_id: number): Promise<Participant> {
-		const { first_name, last_name } = participant;
-
-		const db_participant = (await invoke('new_participant', {
-			first_name,
-			last_name,
-			team_id
-		}).catch((e) => alert(e))) as Participant;
-
-		return db_participant;
 	}
 </script>
 
 <h1>Teams</h1>
 
 <h2>Add a new team</h2>
-<form on:submit={new_team}>
+<form on:submit={new_team_and_participant}>
 	<label>
 		Team Name
 		<input type="text" bind:value={team.name} />
@@ -71,4 +69,36 @@
 		</label>
 	{/if}
 	<input type="submit" value="Add" />
+
+	<main class="teams">
+		{#await get_teams()}
+			<p class="awaiting">Getting teams...</p>
+		{:then teams}
+			<table>
+				<thead>
+					<th scope="col">ID</th>
+					<th scope="col">Name</th>
+					<th scope="col">Individual?</th>
+					<th scope="col">Points</th>
+				</thead>
+				<tbody>
+					{#each [teams, new_teams].flat() as team}
+						<tr>
+							<th class="id">{team.id}</th>
+							<td class="name">{team.name}</td>
+							<td class="individual">
+								<input type="checkbox" checked={team.individual} disabled />
+							</td>
+							<td class="points">{team.points}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{:catch error}
+			<p class="error">
+				Failed to get teams...<br />
+			</p>
+			<pre>{error}</pre>
+		{/await}
+	</main>
 </form>

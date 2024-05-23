@@ -35,10 +35,8 @@
 
 <Banner title="Events" subtitle="Click on an event to edit it." />
 
-{#await get_events()}
-	<p class="awaiting">Getting events...</p>
-{:then events}
-	<Table headings={['ID', 'Name', 'Type']} highlighted_columns={[1]}>
+<Table headings={['ID', 'Name', 'Type']} highlighted_columns={[1]}>
+	{#await get_events() then events}
 		{#each [events, new_events].flat() as event}
 			<tr>
 				<td class="id">{event.id}</td>
@@ -49,13 +47,13 @@
 				</th>
 			</tr>
 		{/each}
-	</Table>
-{:catch error}
-	<p class="error">
-		Failed to get events...<br />
-	</p>
-	<pre>{error}</pre>
-{/await}
+	{:catch error}
+		<p class="error">
+			Failed to get events...<br />
+		</p>
+		<pre>{error}</pre>
+	{/await}
+</Table>
 
 <!-- <form on:submit={new_event}>
 	<label>

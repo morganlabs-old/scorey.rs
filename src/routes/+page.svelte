@@ -11,10 +11,8 @@
 </script>
 
 <Banner title="Leaderboard" subtitle="See whose winning!"></Banner>
-{#await get_teams_and_sort()}
-	<p>loading...</p>
-{:then teams}
-	<Table headings={['Position', 'Name', 'Points']} highlighted_columns={[0, 1]}>
+<Table headings={['Position', 'Name', 'Points']} highlighted_columns={[0, 1]}>
+	{#await get_teams_and_sort() then teams}
 		{#each teams as team, idx}
 			<tr class="row">
 				<th class="position">{idx + 1}</th>
@@ -22,7 +20,7 @@
 				<td class="points">{team.points}</td>
 			</tr>
 		{/each}
-	</Table>
-{:catch error}
-	<p>{error.message}</p>
-{/await}
+	{:catch error}
+		<p>{error.message}</p>
+	{/await}
+</Table>

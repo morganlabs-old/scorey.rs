@@ -65,13 +65,11 @@
 	<input type="submit" value="add" />
 </form> -->
 
-{#await get_participants()}
-	<p class="awaiting">Getting participants...</p>
-{:then participants}
-	<Table
-		headings={['ID', 'First Name', 'Last Name', 'Team ID', 'Team Name', 'Individual?']}
-		highlighted_columns={[1, 2]}
-	>
+<Table
+	headings={['ID', 'First Name', 'Last Name', 'Team ID', 'Team Name', 'Individual?']}
+	highlighted_columns={[1, 2]}
+>
+	{#await get_participants() then participants}
 		{#each [participants, new_participants].flat() as participant}
 			<tr>
 				<td class="id">{participant.id}</td>
@@ -87,13 +85,13 @@
 				</th>
 			</tr>
 		{/each}
-	</Table>
-{:catch error}
-	<p class="error">
-		Failed to get teams...<br />
-	</p>
-	<pre>{error}</pre>
-{/await}
+	{:catch error}
+		<p class="error">
+			Failed to get teams...<br />
+		</p>
+		<pre>{error}</pre>
+	{/await}
+</Table>
 
 <style lang="scss">
 	.edit {

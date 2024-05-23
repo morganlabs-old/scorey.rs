@@ -75,10 +75,8 @@
 	<input type="submit" value="Add" /> -->
 <!-- </form> -->
 
-{#await get_teams()}
-	<p class="awaiting">Getting teams...</p>
-{:then teams}
-	<Table headings={['ID', 'Name', 'Individual?', 'Points']} highlighted_columns={[1]}>
+<Table headings={['ID', 'Name', 'Individual?', 'Points']} highlighted_columns={[1]}>
+	{#await get_teams() then teams}
 		{#each [teams, new_teams].flat() as team}
 			<tr class="row">
 				<td class="id">{team.id}</td>
@@ -92,13 +90,13 @@
 				</th>
 			</tr>
 		{/each}
-	</Table>
-{:catch error}
-	<p class="error">
-		Failed to get teams...<br />
-	</p>
-	<pre>{error}</pre>
-{/await}
+	{:catch error}
+		<p class="error">
+			Failed to get teams...<br />
+		</p>
+		<pre>{error}</pre>
+	{/await}
+</Table>
 
 <style lang="scss">
 	.edit {

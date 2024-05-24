@@ -1,0 +1,28 @@
+Table Participant {
+  id integer
+  team_id integer
+  first_name varchar
+  last_name varchar
+}
+
+Table Team {
+  id integer
+  name varchar [note: "Even if a Participant is participating alone, they are still assigned a team and name. If they are alone, the team name will be the name of the participant."]
+  individual bool [note: "If this is true, if a user attempts to assign a Participant to this Team, an error will occur."]
+  points integer
+}
+
+Table Event {
+  id integer
+  name varchar
+  type varchar [note: "enum { SPORT, ACADEMIC }"]
+}
+
+Table EventEntries {
+  team_id integer
+  event_id integer
+}
+
+Ref: Participant.id > Team.id
+Ref: Team.id > EventEntries.team_id
+Ref: Event.id > EventEntries.event_id

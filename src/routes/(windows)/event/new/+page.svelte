@@ -20,15 +20,15 @@
 
 <form on:submit={new_event}>
 	<label>
-		Name
 		<input type="text" bind:value={event.name} />
+		<span>Name</span>
 	</label>
 	<label>
-		Event Type
 		<select bind:value={event.event_type}>
 			<option value="ACADEMIC">Academics</option>
 			<option value="SPORT">Sports</option>
 		</select>
+		<span>Event Type</span>
 	</label>
 	<button type="button" on:click|preventDefault={() => app_window.close()}>Cancel</button>
 	<button class="primary" type="submit">Save</button>

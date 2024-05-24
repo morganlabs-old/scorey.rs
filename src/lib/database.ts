@@ -12,6 +12,10 @@ export function enroll_team_in_events(team_id: number, events: number[] | number
     return Promise.all(promises);
 }
 
+export async function delete_participant(participant_id: number) {
+    return await invoke('delete_participant', { participant_id });
+}
+
 export async function unenroll_team_in_events(team_id: number, events: number[] | number) {
     events = (Array.isArray(events) ? events : [events]) as number[];
 

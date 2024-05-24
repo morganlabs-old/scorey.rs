@@ -1,7 +1,11 @@
 <script lang="ts">
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
-	import { type Participant, get_participants } from '$lib';
+	import {
+		type Participant,
+		get_participants,
+		delete_participant as delete_participant_inner
+	} from '$lib';
 	import { WebviewWindow } from '@tauri-apps/api/window';
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -29,6 +33,17 @@
 		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
 		webview.once('tauri://close-requested', () => location.reload());
 	}
+
+	async function delete_participant(participant_id: number) {
+		try {
+			await delete_participant_inner(participant_id);
+			alert('Deleted participant sucessfully.');
+			location.reload();
+		} catch (e) {
+			alert('Failed to delete partiticipant.');
+			console.error(e);
+		}
+	}
 </script>
 
 <Banner title="Participants" subtitle="Click on a participant to edit them.">
@@ -50,8 +65,11 @@
 				<th class="individual">
 					<input type="checkbox" checked={participant.team_individual} on:click|preventDefault />
 				</th>
-				<th class="edit"
-					><button class="edit_btn" on:click={() => edit_participant(participant)}>Edit</button>
+				<th class="actions">
+					<button class="edit_btn" on:click={() => edit_participant(participant)}>Edit</button>
+					<button class="delete_btn" on:click={() => delete_participant(participant.id)}
+						>Delete</button
+					>
 				</th>
 			</tr>
 		{/each}

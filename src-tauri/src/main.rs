@@ -39,14 +39,42 @@ fn main() {
             new_team,
             new_participant,
             new_event,
-            new_event_entry,
+            enroll_team_in_events,
             get_teams,
             get_team,
+            get_team_events,
             get_participants,
-            get_events
+            get_events,
+            update_team,
         ])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application.");
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn get_team_events(app_handle: tauri::AppHandle, team_id: i32) -> Result<Vec<i32>, String> {
+    let database = connect_to_db(app_handle);
+    let team_events = database
+        .get_team_events(team_id)
+        .map_err(|e| e.to_string())?;
+
+    Ok(team_events)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn update_team(
+    app_handle: tauri::AppHandle,
+    id: i32,
+    name: String,
+    individual: bool,
+    points: i32,
+) -> Result<Team, String> {
+    let database = connect_to_db(app_handle);
+    let updated_team = database
+        .update_team(id, name, individual, points)
+        .map_err(|e| e.to_string())?;
+
+    Ok(updated_team)
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -91,7 +119,7 @@ fn new_event(
 }
 
 #[tauri::command(rename_all = "snake_case")]
-fn new_event_entry(
+fn enroll_team_in_events(
     app_handle: tauri::AppHandle,
     team_id: i32,
     event_id: i32,

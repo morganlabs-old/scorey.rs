@@ -4,6 +4,7 @@ pub mod structs;
 mod get;
 mod get_many;
 mod new;
+mod update;
 
 use crate::prelude::*;
 use diesel::prelude::*;

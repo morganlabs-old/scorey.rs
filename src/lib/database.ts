@@ -1,24 +1,40 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export async function enroll_team_in_events(team_id: number, events: number[] | number) {
+	events = (Array.isArray(events) ? events : [events]) as number[];
+
+	const promises = [];
+
+	for (const event_id of events) {
+		promises.push(await invoke('enroll_team_in_events', { team_id, event_id }));
+	}
+
+	return Promise.all(promises);
+}
+
+export async function update_team(team: Team) {
+	const { id, name, individual, points } = team;
+	return await invoke<Team>('update_team', { id, name, individual, points });
+}
+
+export async function get_team_events(team_id: number) {
+	return await invoke<number[]>('get_team_events', { team_id });
+}
+
 export async function get_teams() {
-	const teams = await invoke<Team[]>('get_teams');
-	return teams;
+	return await invoke<Team[]>('get_teams');
 }
 
 export async function get_team(team_id: number) {
-	const teams = await invoke<Team>('get_team', { team_id });
-	return teams;
+	return await invoke<Team>('get_team', { team_id });
 }
 
 export async function get_events() {
-	const events = await invoke<Event[]>('get_events');
-	return events;
+	return await invoke<Event[]>('get_events');
 }
 
 export async function get_participants() {
-	const participants = await invoke<Participant[]>('get_participants');
-	console.log(participants);
-	return participants;
+	return await invoke<Participant[]>('get_participants');
 }
 
 export async function new_team(team: NewTeam) {

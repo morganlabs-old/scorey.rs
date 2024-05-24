@@ -25,7 +25,7 @@
 		font-size: 0.75rem;
 
 		thead {
-			border-bottom: 1px solid rgba(#000, 0.1);
+			border-block: 1px solid rgba(#000, 0.1);
 
 			* {
 				border-inline: 1px solid rgba(#000, 0.1);

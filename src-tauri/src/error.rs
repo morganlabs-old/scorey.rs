@@ -24,4 +24,7 @@ pub enum Error {
 
     #[error("Failed to query database.")]
     DatabaseQueryFailure(String),
+
+    #[error("Failed to update value(s) in database.\n{0}")]
+    DatabaseUpdateEntryFailure(String),
 }

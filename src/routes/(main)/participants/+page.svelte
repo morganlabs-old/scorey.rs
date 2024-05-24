@@ -11,7 +11,7 @@
 
 	function edit_participant(participant: Participant) {
 		const webview = new WebviewWindow(`edit_${participant.id}`, {
-			url: `http://localhost:5173/participant/${participant.id}/edit`
+			url: `http://localhost:5173/participant/edit?id=${participant.id}`
 		});
 
 		webview.once(

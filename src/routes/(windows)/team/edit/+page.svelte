@@ -33,7 +33,7 @@
 
 	function select_events(team: Team) {
 		const webview = new WebviewWindow(`enroll_${team.id}`, {
-			url: `http://localhost:5173/team/${team.id}/enroll`
+			url: `http://localhost:5173/team/enroll?id=${team.id}`
 		});
 
 		webview.once('tauri://created', () => webview.setTitle(`Enrolling ${team.name} into events`));

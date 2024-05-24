@@ -9,7 +9,7 @@
 
 	function edit_team(team: Team) {
 		const webview = new WebviewWindow(`edit_${team.id}`, {
-			url: `http://localhost:5173/team/${team.id}/edit`
+			url: `http://localhost:5173/team/edit?id=${team.id}`
 		});
 
 		webview.once('tauri://created', async () => await webview.setTitle(`Editing ${team.name}`));

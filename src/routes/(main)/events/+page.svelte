@@ -10,7 +10,7 @@
 
 	function edit_event(event: Event) {
 		const webview = new WebviewWindow(`edit_${event.id}`, {
-			url: `http://localhost:5173/event/${event.id}/edit`
+			url: `http://localhost:5173/event/edit?id=${event.id}`
 		});
 
 		webview.once('tauri://created', async () => await webview.setTitle(`Editing ${event.name}`));

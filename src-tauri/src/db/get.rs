@@ -19,6 +19,18 @@ impl Database {
         Ok(db_team)
     }
 
+    pub fn get_team_members(&self, team_id: i32) -> Result<Vec<Participant>> {
+        use schema::participant::dsl;
+
+        let mut connection = self.connect()?;
+        let team_members = dsl::participant
+            .filter(dsl::team_id.eq(team_id))
+            .load::<Participant>(&mut connection)
+            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
+
+        Ok(team_members)
+    }
+
     pub fn get_event(&self, event_id: i32) -> Result<Event> {
         use schema::event::dsl::*;
 

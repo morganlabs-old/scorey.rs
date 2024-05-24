@@ -52,7 +52,9 @@ fn main() {
             update_event,
             update_team,
             update_participant,
-            delete_participant
+            delete_participant,
+            delete_team,
+            delete_event
         ])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application.");
@@ -188,8 +190,24 @@ fn unenroll_team_in_events(
 fn delete_participant(app_handle: tauri::AppHandle, participant_id: i32) -> Result<(), String> {
     let database = connect_to_db(app_handle);
     database
-        .delete_participant(participant_id)
+        .delete_participant(participant_id, true)
         .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn delete_team(app_handle: tauri::AppHandle, team_id: i32) -> Result<(), String> {
+    let database = connect_to_db(app_handle);
+    database.delete_team(team_id).map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn delete_event(app_handle: tauri::AppHandle, event_id: i32) -> Result<(), String> {
+    let database = connect_to_db(app_handle);
+    database.delete_event(event_id).map_err(|e| e.to_string())?;
 
     Ok(())
 }

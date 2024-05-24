@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let title: string = '';
+	export let title: string;
 	export let subtitle: string = '';
 </script>
 
@@ -35,5 +35,21 @@
 	.subtitle {
 		font-size: 0.9rem;
 		opacity: 0.5;
+	}
+
+	.right :global(button) {
+		all: unset;
+		background: none;
+		color: black;
+		opacity: 0.5;
+		padding: 0 8px;
+		font-weight: 200;
+		font-size: 2rem;
+		border: none;
+
+		&:hover {
+			border-radius: 5px;
+			background-color: rgba(#000000, 0.1);
+		}
 	}
 </style>

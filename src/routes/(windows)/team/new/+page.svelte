@@ -42,21 +42,21 @@
 
 <form on:submit={new_team}>
 	<label>
-		Team Name
 		<input type="text" bind:value={team.name} />
+		<span>Team Name</span>
 	</label>
 	<label>
-		Individual
 		<input type="checkbox" bind:checked={team.individual} />
+		<span>Individual</span>
 	</label>
 	{#if team.individual}
 		<label>
-			Participant First Name
 			<input type="text" bind:value={participant.first_name} />
+			<span>Participant First Name</span>
 		</label>
 		<label>
-			Participant Last Name
 			<input type="text" bind:value={participant.last_name} />
+			<span>Participant Last Name</span>
 		</label>
 	{/if}
 	<button type="button" on:click|preventDefault={() => app_window.close()}>Cancel</button>

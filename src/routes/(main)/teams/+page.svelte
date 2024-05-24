@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
-	import { type Team, get_teams } from '$lib';
+	import { type Team, get_teams, delete_team as delete_team_inner } from '$lib';
 	import { WebviewWindow } from '@tauri-apps/api/window';
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -9,7 +9,10 @@
 
 	function edit_team(team: Team) {
 		const webview = new WebviewWindow(`edit_${team.id}`, {
-			url: `http://localhost:5173/team/edit?id=${team.id}`
+			url: `http://localhost:5173/team/edit?id=${team.id}`,
+			width: 500,
+			height: 270,
+			center: true
 		});
 
 		webview.once('tauri://created', async () => await webview.setTitle(`Editing ${team.name}`));
@@ -20,17 +23,31 @@
 	function add_team() {
 		const uuid = uuidv4();
 		const webview = new WebviewWindow(`new_team_${uuid}`, {
-			url: 'http://localhost:5173/team/new'
+			url: 'http://localhost:5173/team/new',
+			width: 500,
+			height: 270,
+			center: true
 		});
 
 		webview.once('tauri://created', async () => await webview.setTitle('Add new team'));
 		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
 		webview.once('tauri://close-requested', () => location.reload());
 	}
+
+	async function delete_team(event_id: number) {
+		try {
+			await delete_team_inner(event_id);
+			alert('Deleted team sucessfully.');
+			location.reload();
+		} catch (e) {
+			alert(`Failed to delete team.\n${e}`);
+			console.error(e);
+		}
+	}
 </script>
 
-<Banner title="Teams" subtitle="Click on a team to edit it.">
-	<button class="add" on:click={add_team}>Add</button>
+<Banner title="Teams">
+	<button class="add" on:click={add_team}>+</button>
 </Banner>
 
 <Table headings={['ID', 'Name', 'Individual?', 'Points']} highlighted_columns={[1]}>
@@ -45,6 +62,9 @@
 				<td class="points">{team.points}</td>
 				<th class="edit"
 					><button class="edit_btn" on:click={() => edit_team(team)}>Edit</button>
+				</th>
+				<th class="delete"
+					><button class="edit_btn" on:click={() => delete_team(team.id)}>Delete</button>
 				</th>
 			</tr>
 		{/each}

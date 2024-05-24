@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
-	import { type Event, get_events } from '$lib';
+	import { type Event, get_events, delete_event as delete_event_inner } from '$lib';
 	import { WebviewWindow } from '@tauri-apps/api/window';
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -10,7 +10,10 @@
 
 	function edit_event(event: Event) {
 		const webview = new WebviewWindow(`edit_${event.id}`, {
-			url: `http://localhost:5173/event/edit?id=${event.id}`
+			url: `http://localhost:5173/event/edit?id=${event.id}`,
+			width: 500,
+			height: 270,
+			center: true
 		});
 
 		webview.once('tauri://created', async () => await webview.setTitle(`Editing ${event.name}`));
@@ -21,17 +24,31 @@
 	function add_event() {
 		const uuid = uuidv4();
 		const webview = new WebviewWindow(`new_event_${uuid}`, {
-			url: 'http://localhost:5173/event/new'
+			url: 'http://localhost:5173/event/new',
+			width: 500,
+			height: 270,
+			center: true
 		});
 
 		webview.once('tauri://created', async () => await webview.setTitle('Add new event'));
 		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
 		webview.once('tauri://close-requested', () => location.reload());
 	}
+
+	async function delete_event(event_id: number) {
+		try {
+			await delete_event_inner(event_id);
+			alert('Deleted event sucessfully.');
+			location.reload();
+		} catch (e) {
+			alert(`Failed to delete event.\n${e}`);
+			console.error(e);
+		}
+	}
 </script>
 
-<Banner title="Events" subtitle="Click on an event to edit it.">
-	<button class="add" on:click={add_event}>Add</button>
+<Banner title="Events">
+	<button class="add" on:click={add_event}>+</button>
 </Banner>
 
 <Table headings={['ID', 'Name', 'Type']} highlighted_columns={[1]}>
@@ -42,8 +59,11 @@
 				<th class="name">{event.name}</th>
 				<td class="type">{event.event_type}</td>
 				<th class="edit"
-					><button class="edit_btn" on:click={() => edit_event(event)}>Edit</button>
-				</th>
+					><button class="edit_btn" on:click={() => edit_event(event)}>Edit</button></th
+				>
+				<th class="delete"
+					><button class="delete_btn" on:click={() => delete_event(event.id)}>Delete</button></th
+				>
 			</tr>
 		{/each}
 	{:catch error}

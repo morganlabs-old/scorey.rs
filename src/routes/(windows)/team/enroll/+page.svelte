@@ -32,7 +32,7 @@
 </script>
 
 {#await events then events}
-	<Table headings={['ID', 'Event Name', 'Type', 'Enrolled? (Y/N)']} highlighted_columns={[1, 2]}>
+	<Table headings={['ID', 'Event Name', 'Type', 'Enrolled?']} highlighted_columns={[1, 2]}>
 		{#each events as event}
 			<tr>
 				<td>{event.id}</td>

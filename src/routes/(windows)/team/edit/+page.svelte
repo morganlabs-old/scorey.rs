@@ -33,7 +33,10 @@
 
 	function select_events(team: Team) {
 		const webview = new WebviewWindow(`enroll_${team.id}`, {
-			url: `http://localhost:5173/team/enroll?id=${team.id}`
+			url: `http://localhost:5173/team/enroll?id=${team.id}`,
+			width: 500,
+			height: 270,
+			center: true
 		});
 
 		webview.once('tauri://created', () => webview.setTitle(`Enrolling ${team.name} into events`));
@@ -44,23 +47,25 @@
 {#await get_team() then team}
 	<form on:submit={update_team}>
 		<label>
-			Team Name
 			<input type="text" bind:value={new_team.name} />
+			<span>Team Name</span>
 		</label>
 		<label>
-			Points
 			<input type="number" bind:value={new_team.points} />
+			<span>Points</span>
 		</label>
 		<label>
-			Events
 			<button on:click|preventDefault={() => select_events(team)}>Select events</button>
+			<span>Events</span>
 		</label>
 		<label>
-			Individual
 			<input type="checkbox" checked={new_team.individual} on:click|preventDefault disabled />
+			<span>Individual</span>
 		</label>
-		<button type="button" on:click|preventDefault={() => app_window.close()}>Cancel</button>
-		<button class="primary" type="submit">Save</button>
+		<div class="actions">
+			<button type="button" on:click|preventDefault={() => app_window.close()}>Cancel</button>
+			<button class="primary" type="submit">Save</button>
+		</div>
 	</form>
 {:catch error}
 	<p>{error.message}</p>

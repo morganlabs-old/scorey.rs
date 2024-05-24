@@ -27,4 +27,7 @@ pub enum Error {
 
     #[error("Failed to update value(s) in database.\n{0}")]
     DatabaseUpdateEntryFailure(String),
+
+    #[error("Cannot delete a non-individual team that contains members.")]
+    CannotDeleteNonIndividualTeamWithMembers,
 }

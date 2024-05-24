@@ -44,15 +44,14 @@
 {#await get_participant_return_teams() then teams}
 	<form on:submit={update_participant}>
 		<label>
-			First Name
 			<input type="text" bind:value={new_participant.first_name} />
+			<span>First Name</span>
 		</label>
 		<label>
-			Last Name
 			<input type="text" bind:value={new_participant.last_name} />
+			<span>Last Name</span>
 		</label>
 		<label>
-			Team Name
 			{#if !new_participant.team_individual}
 				<select bind:value={new_participant.team_id}>
 					{#each teams as team}
@@ -74,9 +73,12 @@
 					{/each}
 				</select>
 			{/if}
+			<span>Team Name</span>
 		</label>
-		<button type="button" on:click|preventDefault={() => app_window.close()}>Cancel</button>
-		<button class="primary" type="submit">Save</button>
+		<div class="actions">
+			<button type="button" on:click|preventDefault={() => app_window.close()}>Cancel</button>
+			<button class="primary" type="submit">Save</button>
+		</div>
 	</form>
 {:catch error}
 	<p>{error.message}</p>

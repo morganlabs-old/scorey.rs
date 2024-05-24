@@ -4,6 +4,6 @@
 
 <style lang="scss">
 	.container {
-		padding: 38px;
+		padding: 30px;
 	}
 </style>

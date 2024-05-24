@@ -17,7 +17,8 @@
 			"window": {
 				"create": true,
 				"close": true,
-				"setTitle": true
+				"setTitle": true,
+				"setSize": true
 			},
 			"dialog": {
 				"message": true
@@ -67,9 +68,10 @@
 				"fullscreen": false,
 				"resizable": true,
 				"title": "Scorey",
-				"height": 800,
-				"width": 1200,
-				"transparent": true
+				"height": 540,
+				"width": 790,
+				"transparent": true,
+				"center": true
 			}
 		]
 	}

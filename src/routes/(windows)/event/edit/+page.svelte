@@ -36,18 +36,20 @@
 {#await get_event() then}
 	<form on:submit={update_event}>
 		<label>
-			Name
 			<input type="text" bind:value={new_event.name} />
+			<span>Name</span>
 		</label>
 		<label>
-			Event Type
 			<select bind:value={new_event.event_type}>
 				<option value="ACADEMIC">Academics</option>
 				<option value="SPORT">Sports</option>
 			</select>
+			<span>Event Type</span>
 		</label>
-		<button type="button" on:click|preventDefault={() => app_window.close()}>Cancel</button>
-		<button class="primary" type="submit">Save</button>
+		<div class="actions">
+			<button type="button" on:click|preventDefault={() => app_window.close()}>Cancel</button>
+			<button class="primary" type="submit">Save</button>
+		</div>
 	</form>
 {:catch error}
 	<p>{error.message}</p>

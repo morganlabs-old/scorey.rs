@@ -10,7 +10,7 @@
 	}
 </script>
 
-<Banner title="Leaderboard" subtitle="See whose winning!"></Banner>
+<Banner title="Leaderboard" subtitle="See who's winning!"></Banner>
 <Table headings={['Position', 'Name', 'Points']} highlighted_columns={[0, 1]}>
 	{#await get_teams_and_sort() then teams}
 		{#each teams as team, idx}

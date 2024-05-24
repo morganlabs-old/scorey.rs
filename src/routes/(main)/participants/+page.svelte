@@ -11,7 +11,10 @@
 
 	function edit_participant(participant: Participant) {
 		const webview = new WebviewWindow(`edit_${participant.id}`, {
-			url: `http://localhost:5173/participant/edit?id=${participant.id}`
+			url: `http://localhost:5173/participant/edit?id=${participant.id}`,
+			width: 500,
+			height: 270,
+			center: true
 		});
 
 		webview.once(
@@ -26,7 +29,10 @@
 	function add_participant() {
 		const uuid = uuidv4();
 		const webview = new WebviewWindow(`new_participant_${uuid}`, {
-			url: 'http://localhost:5173/participant/new'
+			url: 'http://localhost:5173/participant/new',
+			width: 500,
+			height: 270,
+			center: true
 		});
 
 		webview.once('tauri://created', async () => await webview.setTitle('Add new participant'));
@@ -40,14 +46,14 @@
 			alert('Deleted participant sucessfully.');
 			location.reload();
 		} catch (e) {
-			alert('Failed to delete partiticipant.');
+			alert(`Failed to delete participant.\n${e}`);
 			console.error(e);
 		}
 	}
 </script>
 
-<Banner title="Participants" subtitle="Click on a participant to edit them.">
-	<button class="add" on:click={add_participant}>Add</button>
+<Banner title="Participants">
+	<button class="add" on:click={add_participant}>+</button>
 </Banner>
 
 <Table
@@ -65,8 +71,10 @@
 				<th class="individual">
 					<input type="checkbox" checked={participant.team_individual} on:click|preventDefault />
 				</th>
-				<th class="actions">
+				<th class="edit">
 					<button class="edit_btn" on:click={() => edit_participant(participant)}>Edit</button>
+				</th>
+				<th class="delete">
 					<button class="delete_btn" on:click={() => delete_participant(participant.id)}
 						>Delete</button
 					>

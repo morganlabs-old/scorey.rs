@@ -1,6 +1,9 @@
 /** @type { import("eslint").Linter.Config } */
 module.exports = {
 	root: true,
+	rules: {
+		'svelte/no-at-html-tags': 'off'
+	},
 	extends: [
 		'eslint:recommended',
 		'plugin:@typescript-eslint/recommended',

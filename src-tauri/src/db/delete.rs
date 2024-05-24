@@ -1,4 +1,4 @@
-use crate::db::{schema, structs::Participant, Database};
+use crate::db::{schema, Database};
 use crate::prelude::*;
 use diesel::prelude::*;
 

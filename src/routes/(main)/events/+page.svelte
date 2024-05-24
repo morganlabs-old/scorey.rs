@@ -5,7 +5,8 @@
 	import { WebviewWindow } from '@tauri-apps/api/window';
 	import { v4 as uuidv4 } from 'uuid';
 
-	$: events = get_events();
+	$: events = async () =>
+		(await get_events()).sort((a, b) => b.event_type.localeCompare(a.event_type));
 
 	function edit_event(event: Event) {
 		const webview = new WebviewWindow(`edit_${event.id}`, {
@@ -34,7 +35,7 @@
 </Banner>
 
 <Table headings={['ID', 'Name', 'Type']} highlighted_columns={[1]}>
-	{#await events then events}
+	{#await events() then events}
 		{#each events as event}
 			<tr>
 				<td class="id">{event.id}</td>

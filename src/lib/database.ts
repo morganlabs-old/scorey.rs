@@ -1,12 +1,24 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-export async function enroll_team_in_events(team_id: number, events: number[] | number) {
+export function enroll_team_in_events(team_id: number, events: number[] | number) {
     events = (Array.isArray(events) ? events : [events]) as number[];
 
     const promises = [];
 
     for (const event_id of events) {
-        promises.push(await invoke('enroll_team_in_events', { team_id, event_id }));
+        promises.push(invoke('enroll_team_in_events', { team_id, event_id }));
+    }
+
+    return Promise.all(promises);
+}
+
+export async function unenroll_team_in_events(team_id: number, events: number[] | number) {
+    events = (Array.isArray(events) ? events : [events]) as number[];
+
+    const promises = [];
+
+    for (const event_id of events) {
+        promises.push(invoke('unenroll_team_in_events', { team_id, event_id }));
     }
 
     return Promise.all(promises);

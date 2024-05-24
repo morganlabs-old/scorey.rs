@@ -41,6 +41,7 @@ fn main() {
             new_participant,
             new_event,
             enroll_team_in_events,
+            unenroll_team_in_events,
             get_teams,
             get_team,
             get_team_events,
@@ -166,6 +167,20 @@ fn enroll_team_in_events(
         .map_err(|e| e.to_string())?;
 
     Ok(new_event_entry)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn unenroll_team_in_events(
+    app_handle: tauri::AppHandle,
+    team_id: i32,
+    event_id: i32,
+) -> core::result::Result<(), String> {
+    let database = connect_to_db(app_handle);
+    database
+        .delete_event_entry(team_id, event_id)
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
 }
 
 #[tauri::command(rename_all = "snake_case")]

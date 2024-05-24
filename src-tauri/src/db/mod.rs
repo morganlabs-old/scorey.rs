@@ -1,6 +1,7 @@
 mod schema;
 pub mod structs;
 
+mod delete;
 mod get;
 mod get_many;
 mod new;
@@ -34,7 +35,7 @@ impl Database {
         self.path.push("scorey.db");
 
         self.ensure_db_exists()?;
-        if (run_migrations) {
+        if run_migrations {
             self.run_migrations()?;
         };
 

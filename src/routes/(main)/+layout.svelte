@@ -6,7 +6,8 @@
 		{ title: 'Leaderboard', href: '/', icon: '' },
 		{ title: 'Participants', href: '/participants', icon: '' },
 		{ title: 'Teams', href: '/teams', icon: '' },
-		{ title: 'Events', href: '/events', icon: '' }
+		{ title: 'Events', href: '/events', icon: '' },
+		{ title: 'Entries', href: '/entries', icon: '' }
 	];
 </script>
 
@@ -28,5 +29,6 @@
 		background-color: #fff;
 		width: 100%;
 		height: 100vh;
+		overflow-y: auto;
 	}
 </style>

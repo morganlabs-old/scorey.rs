@@ -31,7 +31,7 @@ export async function update_team(team: Team) {
 
 export async function update_event(event: Event) {
     const { id, name, event_type } = event;
-    return await invoke<Event>('update_event', { id, name, type: event_type });
+    return await invoke<Event>('update_event', { id, name, event_type });
 }
 
 export async function update_participant(participant: Participant) {

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type Page from 'src/app.d.ts';
 	import { page } from '$app/stores';
+	import type Page from '$types';
 
 	$: current_route = '/' + ($page.url.pathname.split('/')[1] || '');
 	export let pages: Page[] = [];

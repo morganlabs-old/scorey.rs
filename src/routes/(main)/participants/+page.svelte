@@ -2,22 +2,45 @@
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
 	import { type Participant, get_participants } from '$lib';
-
-	$: new_participants = [] as Participant[];
+	import { WebviewWindow } from '@tauri-apps/api/window';
+	import { v4 as uuidv4 } from 'uuid';
 
 	function edit_participant(participant: Participant) {
-		alert(`Editing participant ${participant.first_name}`);
+		const webview = new WebviewWindow(`edit_${participant.id}`, {
+			url: `http://localhost:5173/participant/${participant.id}/edit`
+		});
+
+		webview.once(
+			'tauri://created',
+			async () =>
+				await webview.setTitle(`Editing ${participant.first_name} ${participant.last_name}`)
+		);
+		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
+		webview.once('tauri://close-requested', () => location.reload());
+	}
+
+	function add_participant() {
+		const uuid = uuidv4();
+		const webview = new WebviewWindow(`new_participant_${uuid}`, {
+			url: 'http://localhost:5173/participant/new'
+		});
+
+		webview.once('tauri://created', async () => await webview.setTitle('Add new participant'));
+		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
+		webview.once('tauri://close-requested', () => location.reload());
 	}
 </script>
 
-<Banner title="Participants" subtitle="Click on a participant to edit them." />
+<Banner title="Participants" subtitle="Click on a participant to edit them.">
+	<button class="add" on:click={add_participant}>Add</button>
+</Banner>
 
 <Table
 	headings={['ID', 'First Name', 'Last Name', 'Team ID', 'Team Name', 'Individual?']}
 	highlighted_columns={[1, 2]}
 >
 	{#await get_participants() then participants}
-		{#each [participants, new_participants].flat() as participant}
+		{#each participants as participant}
 			<tr>
 				<td class="id">{participant.id}</td>
 				<th class="first_name">{participant.first_name}</th>

@@ -13,6 +13,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"$lib": ["src/lib/index.ts"],
+			"$types": ["src/app.d.ts"],
 			"$components": ["src/lib/components"],
 			"$components/*": ["src/lib/components/*"],
 			"$styles": ["src/lib/styles"],

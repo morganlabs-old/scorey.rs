@@ -2,19 +2,40 @@
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
 	import { type Event, get_events } from '$lib';
+	import { WebviewWindow } from '@tauri-apps/api/window';
+	import { v4 as uuidv4 } from 'uuid';
 
-	$: new_events = [] as Event[];
+	$: events = get_events();
 
 	function edit_event(event: Event) {
-		alert(`Editing event ${event.name}`);
+		const webview = new WebviewWindow(`edit_${event.id}`, {
+			url: `http://localhost:5173/event/${event.id}/edit`
+		});
+
+		webview.once('tauri://created', async () => await webview.setTitle(`Editing ${event.name}`));
+		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
+		webview.once('tauri://close-requested', () => location.reload());
+	}
+
+	function add_event() {
+		const uuid = uuidv4();
+		const webview = new WebviewWindow(`new_event_${uuid}`, {
+			url: 'http://localhost:5173/event/new'
+		});
+
+		webview.once('tauri://created', async () => await webview.setTitle('Add new event'));
+		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
+		webview.once('tauri://close-requested', () => location.reload());
 	}
 </script>
 
-<Banner title="Events" subtitle="Click on an event to edit it." />
+<Banner title="Events" subtitle="Click on an event to edit it.">
+	<button class="add" on:click={add_event}>Add</button>
+</Banner>
 
 <Table headings={['ID', 'Name', 'Type']} highlighted_columns={[1]}>
-	{#await get_events() then events}
-		{#each [events, new_events].flat() as event}
+	{#await events then events}
+		{#each events as event}
 			<tr>
 				<td class="id">{event.id}</td>
 				<th class="name">{event.name}</th>

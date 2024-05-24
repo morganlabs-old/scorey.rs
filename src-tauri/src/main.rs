@@ -22,6 +22,7 @@ fn main() {
                 None => panic!("Failed to get application data directory!"),
             };
 
+            #[allow(unused_variables)]
             let window = app_handle.get_window("main").unwrap();
 
             #[cfg(target_os = "macos")]
@@ -32,7 +33,7 @@ fn main() {
             apply_blur(&window, Some((18, 18, 18, 125)))
                 .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
-            Database::default().init(app_data_dir)?;
+            Database::default().init(app_data_dir, true)?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -44,8 +45,12 @@ fn main() {
             get_team,
             get_team_events,
             get_participants,
+            get_participant,
             get_events,
+            get_event,
+            update_event,
             update_team,
+            update_participant
         ])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application.");
@@ -75,6 +80,37 @@ fn update_team(
         .map_err(|e| e.to_string())?;
 
     Ok(updated_team)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn update_event(
+    app_handle: tauri::AppHandle,
+    id: i32,
+    name: String,
+    event_type: String,
+) -> Result<Event, String> {
+    let database = connect_to_db(app_handle);
+    let updated_event = database
+        .update_event(id, name, event_type)
+        .map_err(|e| e.to_string())?;
+
+    Ok(updated_event)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn update_participant(
+    app_handle: tauri::AppHandle,
+    id: i32,
+    team_id: i32,
+    first_name: String,
+    last_name: String,
+) -> Result<Participant, String> {
+    let database = connect_to_db(app_handle);
+    let updated_participant = database
+        .update_participant(id, team_id, first_name, last_name)
+        .map_err(|e| e.to_string())?;
+
+    Ok(updated_participant)
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -154,6 +190,25 @@ fn get_team(app_handle: tauri::AppHandle, team_id: i32) -> Result<Team, String> 
 }
 
 #[tauri::command(rename_all = "snake_case")]
+fn get_event(app_handle: tauri::AppHandle, event_id: i32) -> Result<Event, String> {
+    let database = connect_to_db(app_handle);
+    let event = database.get_event(event_id).map_err(|e| e.to_string())?;
+    Ok(event)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn get_participant(
+    app_handle: tauri::AppHandle,
+    participant_id: i32,
+) -> Result<Participant, String> {
+    let database = connect_to_db(app_handle);
+    let participant = database
+        .get_participant(participant_id)
+        .map_err(|e| e.to_string())?;
+    Ok(participant)
+}
+
+#[tauri::command(rename_all = "snake_case")]
 fn get_events(app_handle: tauri::AppHandle) -> Result<Vec<Event>, String> {
     let database = connect_to_db(app_handle);
     let events = database.get_events().map_err(|e| e.to_string())?;
@@ -164,7 +219,7 @@ fn connect_to_db(app_handle: tauri::AppHandle) -> Database {
     let app_data_dir = get_app_data_dir(app_handle);
 
     let mut database = Database::default();
-    if let Err(e) = database.init(app_data_dir) {
+    if let Err(e) = database.init(app_data_dir, false) {
         println!("{e:?}");
         exit(1);
     }

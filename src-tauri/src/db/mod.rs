@@ -29,12 +29,14 @@ impl Default for Database {
 }
 
 impl Database {
-    pub fn init(&mut self, app_data_dir: PathBuf) -> Result<()> {
+    pub fn init(&mut self, app_data_dir: PathBuf, run_migrations: bool) -> Result<()> {
         self.path.push(app_data_dir);
         self.path.push("scorey.db");
 
         self.ensure_db_exists()?;
-        self.run_migrations()?;
+        if (run_migrations) {
+            self.run_migrations()?;
+        };
 
         Ok(())
     }

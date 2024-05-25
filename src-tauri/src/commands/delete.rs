@@ -2,24 +2,24 @@ use crate::utils::connect_to_db;
 use tauri::AppHandle;
 
 macro_rules! create_delete_command {
-    ($fn_name:ident, $db_method:ident) => {
+    ($fn_name:ident) => {
         #[tauri::command(rename_all = "snake_case")]
-        pub fn $fn_name(app: AppHandle, item_id: i32) -> Result<(), String> {
+        pub fn $fn_name(app: AppHandle, id: i32) -> Result<(), String> {
             let database = connect_to_db(app);
-            database.$db_method(item_id).map_err(|e| e.to_string())?;
+            database.$fn_name(id).map_err(|e| e.to_string())?;
             Ok(())
         }
     };
 }
 
-create_delete_command!(delete_team, delete_team);
-create_delete_command!(delete_event, delete_event);
+create_delete_command!(delete_team);
+create_delete_command!(delete_event);
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn delete_participant(app: AppHandle, participant_id: i32) -> Result<(), String> {
+pub fn delete_participant(app: AppHandle, id: i32) -> Result<(), String> {
     let database = connect_to_db(app);
     database
-        .delete_participant(participant_id, true)
+        .delete_participant(id, true)
         .map_err(|e| e.to_string())?;
 
     Ok(())

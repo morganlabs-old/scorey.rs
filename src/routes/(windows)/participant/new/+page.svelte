@@ -1,11 +1,6 @@
 <script lang="ts">
 	import { appWindow as app_window } from '@tauri-apps/api/window';
-	import { new_participant as new_participant_inner, get_teams, type NewParticipant } from '$lib';
-
-	const teams = (async () => {
-		const teams = await get_teams();
-		return teams;
-	})();
+	import { new_participant, get_teams, type NewParticipant, type Team } from '$lib';
 
 	$: team_id = 0;
 	$: participant = {
@@ -13,22 +8,21 @@
 		last_name: ''
 	} as NewParticipant;
 
-	async function new_participant() {
-		try {
-			if (team_id === 0) {
-				alert('Please select a team.');
-				return;
-			}
-			await new_participant_inner(participant, team_id);
-			alert('Added new participant.');
-		} catch (e) {
-			console.error(e);
-			alert('Failed to add new participant.');
-		}
+	async function add_participant() {
+		const db_participant = await new_participant(participant, team_id);
+		if (!db_participant) return;
+		participant = { first_name: '', last_name: '' };
+	}
+
+	function is_selected(teams: Team[], idx: number) {
+		const team = teams[idx];
+		const is_selected = teams.length === 1 && idx === 0;
+		if (is_selected) team_id = team.id;
+		return is_selected;
 	}
 </script>
 
-<form on:submit={new_participant}>
+<form on:submit={add_participant}>
 	<label>
 		<input type="text" bind:value={participant.first_name} />
 		<span>First Name</span>
@@ -39,11 +33,14 @@
 	</label>
 	<label>
 		<select bind:value={team_id}>
-			<option value={0} selected>None</option>
-			{#await teams then teams}
-				{#each teams as team}
+			{#await get_teams() then teams}
+				{#if teams.filter((t) => !t.individual).length > 1}
+					<option value={0} selected>None</option>
+				{/if}
+				{#each teams as team, idx}
 					{#if !team.individual}
-						<option value={team.id}>{team.name}</option>
+						<option value={team.id} selected={(() => is_selected(teams, idx))()}>{team.name}</option
+						>
 					{/if}
 				{/each}
 			{/await}

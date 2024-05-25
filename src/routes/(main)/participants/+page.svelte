@@ -4,7 +4,8 @@
 	import {
 		type Participant,
 		get_participants,
-		delete_participant as delete_participant_inner
+		delete_participant as delete_participant_inner,
+		get_teams
 	} from '$lib';
 	import { WebviewWindow } from '@tauri-apps/api/window';
 	import { v4 as uuidv4 } from 'uuid';
@@ -26,7 +27,16 @@
 		webview.once('tauri://close-requested', () => location.reload());
 	}
 
-	function add_participant() {
+	async function add_participant() {
+		const non_individual_teams = await get_teams().then((teams) =>
+			teams.filter((team) => !team.individual)
+		);
+
+		if (non_individual_teams.length === 0) {
+			alert('No teams available to add participant to.\nPlease create a team first.');
+			return;
+		}
+
 		const uuid = uuidv4();
 		const webview = new WebviewWindow(`new_participant_${uuid}`, {
 			url: '/participant/new',

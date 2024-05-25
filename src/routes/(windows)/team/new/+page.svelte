@@ -1,11 +1,6 @@
 <script lang="ts">
 	import { appWindow as app_window } from '@tauri-apps/api/window';
-	import {
-		new_team as new_team_inner,
-		new_participant as new_participant_inner,
-		type NewTeam,
-		type NewParticipant
-	} from '$lib';
+	import { new_team, new_participant, delete_team, type NewTeam, type NewParticipant } from '$lib';
 
 	$: team = {
 		name: '',
@@ -17,30 +12,24 @@
 		last_name: ''
 	} as NewParticipant;
 
-	async function new_team() {
-		try {
-			const new_team = await new_team_inner(team);
+	async function add_team() {
+		const db_team = await new_team(team);
+		if (!db_team) return;
 
-			if (team.individual) {
-				await new_participant(new_team!.id);
-			}
-		} catch (e) {
-			console.error(e);
-			alert('Failed to add new team');
-		}
-	}
+		if (team.individual) {
+			const db_participant = await new_participant(participant, db_team.id);
+			if (!db_participant) return await delete_team(db_team.id);
 
-	async function new_participant(team_id: number) {
-		try {
-			await new_participant_inner(participant, team_id);
-		} catch (e) {
-			console.error(e);
-			alert('Failed to add new participant.');
+			team = { name: '', individual: true };
+			participant = { first_name: '', last_name: '' };
+		} else {
+			team = { name: '', individual: false };
+			participant = { first_name: '', last_name: '' };
 		}
 	}
 </script>
 
-<form on:submit={new_team}>
+<form on:submit={add_team}>
 	<label>
 		<input type="text" bind:value={team.name} />
 		<span>Team Name</span>

@@ -1,24 +1,20 @@
 <script lang="ts">
 	import { appWindow as app_window } from '@tauri-apps/api/window';
-	import { new_event as new_event_inner, type NewEvent } from '$lib';
+	import { new_event, type NewEvent } from '$lib';
 
 	$: event = {
 		name: '',
 		event_type: ''
 	} as NewEvent;
 
-	async function new_event() {
-		try {
-			await new_event_inner(event);
-			alert('Added new event.');
-		} catch (e) {
-			console.error(e);
-			alert('Failed to add new event.');
-		}
+	async function add_event() {
+		const db_event = await new_event(event);
+		if (!db_event) return;
+		event = { name: '', event_type: '' };
 	}
 </script>
 
-<form on:submit={new_event}>
+<form on:submit={add_event}>
 	<label>
 		<input type="text" bind:value={event.name} />
 		<span>Name</span>

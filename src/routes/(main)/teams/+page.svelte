@@ -34,9 +34,9 @@
 		webview.once('tauri://close-requested', () => location.reload());
 	}
 
-	async function delete_team(event_id: number) {
+	async function delete_team(team_id: number) {
 		try {
-			await delete_team_inner(event_id);
+			await delete_team_inner(team_id);
 			alert('Deleted team sucessfully.');
 			location.reload();
 		} catch (e) {

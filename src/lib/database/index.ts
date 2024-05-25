@@ -4,6 +4,51 @@ export * from './get_many';
 export * from './new';
 export * from './update';
 
+export function handle_error(e: Record<string, string>) {
+	console.error('Error occured', e);
+
+	const { type, message } = e;
+
+	switch (type) {
+		case 'UniqueConstraintFailed': {
+			const field = message.split(':')[1].replaceAll('.', ' ');
+			alert(`Field "${field}" must be unique.`);
+			break;
+		}
+		case 'FieldIsRequired': {
+			const field = message.split(':')[1].replaceAll('.', ' ');
+			alert(`Field "${field}" is required.`);
+			break;
+		}
+		case 'MustOnlyContainLettersAndSpaces': {
+			const field = message.split(':')[1].replaceAll('.', ' ');
+			alert(`Field "${field}" must only contain letters and spaces.`);
+			break;
+		}
+		case 'MustOnlyContainLetters': {
+			const field = message.split(':')[1].replaceAll('.', ' ');
+			alert(`Field "${field}" must only contain letters.`);
+			break;
+		}
+		case 'CheckViolation': {
+			alert(`A check has been violated:\n${message}`);
+			break;
+		}
+		case 'InvalidTeam': {
+			alert(`Please select a team.`);
+			break;
+		}
+		case 'IncorrectEventType': {
+			alert(`Please choose a type of event.`);
+			break;
+		}
+		default: {
+			alert(`Failed to add entry.\n${message || e}`);
+			break;
+		}
+	}
+}
+
 export type Team = {
 	id: number;
 	name: string;

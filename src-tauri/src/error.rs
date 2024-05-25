@@ -2,7 +2,6 @@ use serde::Serialize;
 use thiserror::Error;
 
 #[derive(Error, Debug, Serialize)]
-// #[serde(tag = "type")]
 pub enum Error {
     #[error("Generic {0}")]
     Generic(String),

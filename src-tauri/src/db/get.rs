@@ -6,18 +6,26 @@ use crate::db::{
 use crate::prelude::*;
 use diesel::prelude::*;
 
+macro_rules! create_get_fn {
+    ($fn_name:ident, $schema:ident, $return_type:ty) => {
+        pub fn $fn_name(&self, item_id: i32) -> Result<$return_type> {
+            use schema::$schema::dsl::*;
+
+            let mut connection = self.connect()?;
+            let db_obj = $schema
+                .filter(id.eq(item_id))
+                .first::<$return_type>(&mut connection)
+                .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
+
+            Ok(db_obj)
+        }
+    };
+}
+
 impl Database {
-    pub fn get_team(&self, team_id: i32) -> Result<Team> {
-        use schema::team::dsl::*;
-
-        let mut connection = self.connect()?;
-        let db_team = team
-            .filter(id.eq(team_id))
-            .first::<Team>(&mut connection)
-            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
-
-        Ok(db_team)
-    }
+    create_get_fn!(get_team, team, Team);
+    create_get_fn!(get_event, event, Event);
+    create_get_fn!(get_participant, participant, Participant);
 
     pub fn get_team_members(&self, team_id: i32) -> Result<Vec<Participant>> {
         use schema::participant::dsl;
@@ -29,30 +37,6 @@ impl Database {
             .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
 
         Ok(team_members)
-    }
-
-    pub fn get_event(&self, event_id: i32) -> Result<Event> {
-        use schema::event::dsl::*;
-
-        let mut connection = self.connect()?;
-        let db_event = event
-            .filter(id.eq(event_id))
-            .first::<Event>(&mut connection)
-            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
-
-        Ok(db_event)
-    }
-
-    pub fn get_participant(&self, participant_id: i32) -> Result<Participant> {
-        use schema::participant::dsl::*;
-
-        let mut connection = self.connect()?;
-        let db_participant = participant
-            .filter(id.eq(participant_id))
-            .first::<Participant>(&mut connection)
-            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
-
-        Ok(db_participant)
     }
 
     pub fn get_team_events(&self, team_id: i32) -> Result<Vec<i32>> {

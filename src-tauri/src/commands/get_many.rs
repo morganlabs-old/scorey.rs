@@ -2,6 +2,21 @@ use crate::db::structs::{Event, ParticipantAndTeam, Team};
 use crate::utils::connect_to_db;
 use tauri::AppHandle;
 
+macro_rules! create_get_many_command {
+    ($fn_name:ident, $return_type:ty) => {
+        #[tauri::command(rename_all = "snake_case")]
+        pub fn $fn_name(app: AppHandle) -> Result<Vec<$return_type>, String> {
+            let database = connect_to_db(app);
+            let item = database.$fn_name().map_err(|e| e.to_string())?;
+            Ok(item)
+        }
+    };
+}
+
+create_get_many_command!(get_teams, Team);
+create_get_many_command!(get_participants, ParticipantAndTeam);
+create_get_many_command!(get_events, Event);
+
 #[tauri::command(rename_all = "snake_case")]
 pub fn get_team_events(app: AppHandle, team_id: i32) -> Result<Vec<i32>, String> {
     let database = connect_to_db(app);
@@ -10,25 +25,4 @@ pub fn get_team_events(app: AppHandle, team_id: i32) -> Result<Vec<i32>, String>
         .map_err(|e| e.to_string())?;
 
     Ok(team_events)
-}
-
-#[tauri::command(rename_all = "snake_case")]
-pub fn get_teams(app: AppHandle) -> Result<Vec<Team>, String> {
-    let database = connect_to_db(app);
-    let teams = database.get_teams().map_err(|e| e.to_string())?;
-    Ok(teams)
-}
-
-#[tauri::command(rename_all = "snake_case")]
-pub fn get_participants(app: AppHandle) -> Result<Vec<ParticipantAndTeam>, String> {
-    let database = connect_to_db(app);
-    let participants = database.get_participants().map_err(|e| e.to_string())?;
-    Ok(participants)
-}
-
-#[tauri::command(rename_all = "snake_case")]
-pub fn get_events(app: AppHandle) -> Result<Vec<Event>, String> {
-    let database = connect_to_db(app);
-    let events = database.get_events().map_err(|e| e.to_string())?;
-    Ok(events)
 }

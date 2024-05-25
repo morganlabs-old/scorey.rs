@@ -1,28 +1,26 @@
 use crate::utils::connect_to_db;
 use tauri::AppHandle;
 
+macro_rules! create_delete_command {
+    ($fn_name:ident, $db_method:ident) => {
+        #[tauri::command(rename_all = "snake_case")]
+        pub fn $fn_name(app: AppHandle, item_id: i32) -> Result<(), String> {
+            let database = connect_to_db(app);
+            database.$db_method(item_id).map_err(|e| e.to_string())?;
+            Ok(())
+        }
+    };
+}
+
+create_delete_command!(delete_team, delete_team);
+create_delete_command!(delete_event, delete_event);
+
 #[tauri::command(rename_all = "snake_case")]
 pub fn delete_participant(app: AppHandle, participant_id: i32) -> Result<(), String> {
     let database = connect_to_db(app);
     database
         .delete_participant(participant_id, true)
         .map_err(|e| e.to_string())?;
-
-    Ok(())
-}
-
-#[tauri::command(rename_all = "snake_case")]
-pub fn delete_team(app: AppHandle, team_id: i32) -> Result<(), String> {
-    let database = connect_to_db(app);
-    database.delete_team(team_id).map_err(|e| e.to_string())?;
-
-    Ok(())
-}
-
-#[tauri::command(rename_all = "snake_case")]
-pub fn delete_event(app: AppHandle, event_id: i32) -> Result<(), String> {
-    let database = connect_to_db(app);
-    database.delete_event(event_id).map_err(|e| e.to_string())?;
 
     Ok(())
 }

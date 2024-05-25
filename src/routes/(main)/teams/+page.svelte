@@ -9,7 +9,7 @@
 
 	function edit_team(team: Team) {
 		const webview = new WebviewWindow(`edit_${team.id}`, {
-			url: `http://localhost:5173/team/edit?id=${team.id}`,
+			url: `/team/edit?id=${team.id}`,
 			width: 500,
 			height: 270,
 			center: true
@@ -23,7 +23,7 @@
 	function add_team() {
 		const uuid = uuidv4();
 		const webview = new WebviewWindow(`new_team_${uuid}`, {
-			url: 'http://localhost:5173/team/new',
+			url: '/team/new',
 			width: 500,
 			height: 270,
 			center: true

@@ -11,7 +11,7 @@
 
 	function edit_participant(participant: Participant) {
 		const webview = new WebviewWindow(`edit_${participant.id}`, {
-			url: `http://localhost:5173/participant/edit?id=${participant.id}`,
+			url: `/participant/edit?id=${participant.id}`,
 			width: 500,
 			height: 270,
 			center: true
@@ -29,7 +29,7 @@
 	function add_participant() {
 		const uuid = uuidv4();
 		const webview = new WebviewWindow(`new_participant_${uuid}`, {
-			url: 'http://localhost:5173/participant/new',
+			url: '/participant/new',
 			width: 500,
 			height: 270,
 			center: true

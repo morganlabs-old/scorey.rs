@@ -10,7 +10,7 @@
 
 	function edit_event(event: Event) {
 		const webview = new WebviewWindow(`edit_${event.id}`, {
-			url: `http://localhost:5173/event/edit?id=${event.id}`,
+			url: `/event/edit?id=${event.id}`,
 			width: 500,
 			height: 270,
 			center: true
@@ -24,7 +24,7 @@
 	function add_event() {
 		const uuid = uuidv4();
 		const webview = new WebviewWindow(`new_event_${uuid}`, {
-			url: 'http://localhost:5173/event/new',
+			url: '/event/new',
 			width: 500,
 			height: 270,
 			center: true

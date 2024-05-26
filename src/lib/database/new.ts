@@ -2,7 +2,7 @@ import { invoke as i } from '@tauri-apps/api/tauri';
 import { handle_error } from './';
 import type { Team, Event, Participant, NewTeam, NewEvent, NewParticipant } from './';
 
-export const new_team = async (team: NewTeam) => {
+export async function new_team(team: NewTeam) {
 	const { name, individual } = team;
 
 	try {
@@ -12,9 +12,9 @@ export const new_team = async (team: NewTeam) => {
 	} catch (e) {
 		handle_error(e as Record<string, string>);
 	}
-};
+}
 
-export const new_participant = async (participant: NewParticipant, team_id: number) => {
+export async function new_participant(participant: NewParticipant, team_id: number) {
 	const { first_name, last_name } = participant;
 
 	try {
@@ -24,9 +24,9 @@ export const new_participant = async (participant: NewParticipant, team_id: numb
 	} catch (e) {
 		handle_error(e as Record<string, string>);
 	}
-};
+}
 
-export const new_event = async (event: NewEvent) => {
+export async function new_event(event: NewEvent) {
 	const { name, event_type } = event;
 
 	try {
@@ -36,9 +36,9 @@ export const new_event = async (event: NewEvent) => {
 	} catch (e) {
 		handle_error(e as Record<string, string>);
 	}
-};
+}
 
-export const enroll_team_in_events = (team_id: number, events: number[] | number) => {
+export async function enroll_team_in_events(team_id: number, events: number[] | number) {
 	events = (Array.isArray(events) ? events : [events]) as number[];
 
 	const promises = [];
@@ -48,4 +48,4 @@ export const enroll_team_in_events = (team_id: number, events: number[] | number
 	}
 
 	return Promise.all(promises);
-};
+}

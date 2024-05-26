@@ -22,4 +22,6 @@ export function new_popup_window(
 
 	webview.once('tauri://error', (e) => console.error('Failed to create window', e));
 	webview.once('tauri://close-requested', () => location.reload());
+
+	return webview;
 }

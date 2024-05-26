@@ -5,29 +5,11 @@
 		type Participant,
 		get_participants,
 		delete_participant as delete_participant_inner,
-		get_teams
+		get_teams,
+		new_popup_window
 	} from '$lib';
-	import { WebviewWindow } from '@tauri-apps/api/window';
-	import { v4 as uuidv4 } from 'uuid';
 
-	function edit_participant(participant: Participant) {
-		const webview = new WebviewWindow(`edit_${participant.id}`, {
-			url: `/participant/edit?id=${participant.id}`,
-			width: 500,
-			height: 270,
-			center: true
-		});
-
-		webview.once(
-			'tauri://created',
-			async () =>
-				await webview.setTitle(`Editing ${participant.first_name} ${participant.last_name}`)
-		);
-		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
-		webview.once('tauri://close-requested', () => location.reload());
-	}
-
-	async function add_participant() {
+	const add_participant = async () => {
 		const non_individual_teams = await get_teams().then((teams) =>
 			teams.filter((team) => !team.individual)
 		);
@@ -37,18 +19,14 @@
 			return;
 		}
 
-		const uuid = uuidv4();
-		const webview = new WebviewWindow(`new_participant_${uuid}`, {
-			url: '/participant/new',
-			width: 500,
-			height: 270,
-			center: true
-		});
+		new_popup_window('/participant/new', 'Add new participant');
+	};
 
-		webview.once('tauri://created', async () => await webview.setTitle('Add new participant'));
-		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
-		webview.once('tauri://close-requested', () => location.reload());
-	}
+	const edit_participant = (participant: Participant) =>
+		new_popup_window(
+			`/participant/edit?id=${participant.id}`,
+			`Editing ${participant.first_name} ${participant.last_name}`
+		);
 
 	async function delete_participant(participant_id: number) {
 		try {

@@ -1,38 +1,10 @@
 <script lang="ts">
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
-	import { type Team, get_teams, delete_team as delete_team_inner } from '$lib';
-	import { WebviewWindow } from '@tauri-apps/api/window';
-	import { v4 as uuidv4 } from 'uuid';
+	import { get_teams, delete_team as delete_team_inner, new_popup_window, type Team } from '$lib';
 
-	$: teams = get_teams();
-
-	function edit_team(team: Team) {
-		const webview = new WebviewWindow(`edit_${team.id}`, {
-			url: `/team/edit?id=${team.id}`,
-			width: 500,
-			height: 270,
-			center: true
-		});
-
-		webview.once('tauri://created', async () => await webview.setTitle(`Editing ${team.name}`));
-		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
-		webview.once('tauri://close-requested', () => location.reload());
-	}
-
-	function add_team() {
-		const uuid = uuidv4();
-		const webview = new WebviewWindow(`new_team_${uuid}`, {
-			url: '/team/new',
-			width: 500,
-			height: 270,
-			center: true
-		});
-
-		webview.once('tauri://created', async () => await webview.setTitle('Add new team'));
-		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
-		webview.once('tauri://close-requested', () => location.reload());
-	}
+	const add_team = () => new_popup_window('/team/new', 'Add new team');
+	const edit_team = (team: Team) => new_popup_window(`/team/edit?edit=${team.id}`, 'Edit team');
 
 	async function delete_team(team_id: number) {
 		try {
@@ -51,7 +23,7 @@
 </Banner>
 
 <Table headings={['ID', 'Name', 'Individual?', 'Points']} highlighted_columns={[1]}>
-	{#await teams then teams}
+	{#await get_teams() then teams}
 		{#each teams as team}
 			<tr class="row">
 				<td class="id">{team.id}</td>

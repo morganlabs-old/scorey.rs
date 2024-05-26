@@ -1,39 +1,16 @@
 <script lang="ts">
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
-	import { type Event, get_events, delete_event as delete_event_inner } from '$lib';
-	import { WebviewWindow } from '@tauri-apps/api/window';
-	import { v4 as uuidv4 } from 'uuid';
+	import {
+		type Event,
+		get_events,
+		delete_event as delete_event_inner,
+		new_popup_window
+	} from '$lib';
 
-	$: events = async () =>
-		(await get_events()).sort((a, b) => b.event_type.localeCompare(a.event_type));
-
-	function edit_event(event: Event) {
-		const webview = new WebviewWindow(`edit_${event.id}`, {
-			url: `/event/edit?id=${event.id}`,
-			width: 500,
-			height: 270,
-			center: true
-		});
-
-		webview.once('tauri://created', async () => await webview.setTitle(`Editing ${event.name}`));
-		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
-		webview.once('tauri://close-requested', () => location.reload());
-	}
-
-	function add_event() {
-		const uuid = uuidv4();
-		const webview = new WebviewWindow(`new_event_${uuid}`, {
-			url: '/event/new',
-			width: 500,
-			height: 270,
-			center: true
-		});
-
-		webview.once('tauri://created', async () => await webview.setTitle('Add new event'));
-		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
-		webview.once('tauri://close-requested', () => location.reload());
-	}
+	const add_event = () => new_popup_window('/event/new', 'Add new event');
+	const edit_event = (event: Event) =>
+		new_popup_window(`/event/edit?id=${event.id}`, `Editing ${event.name}`);
 
 	async function delete_event(event_id: number) {
 		try {
@@ -52,7 +29,7 @@
 </Banner>
 
 <Table headings={['ID', 'Name', 'Type']} highlighted_columns={[1]}>
-	{#await events() then events}
+	{#await get_events() then events}
 		{#each events as event}
 			<tr>
 				<td class="id">{event.id}</td>

@@ -8,7 +8,6 @@
 	$: to_enroll = [] as number[];
 	$: to_unenroll = [] as number[];
 	$: final_events = [team_events, to_enroll].flat().filter((x) => !to_unenroll.includes(x));
-	$: events = get_events();
 
 	async function enroll() {
 		try {
@@ -31,7 +30,7 @@
 	}
 </script>
 
-{#await events then events}
+{#await get_events() then events}
 	<Table headings={['ID', 'Event Name', 'Type', 'Enrolled?']} highlighted_columns={[1, 2]}>
 		{#each events as event}
 			<tr>

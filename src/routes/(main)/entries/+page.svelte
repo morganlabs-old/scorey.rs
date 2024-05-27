@@ -1,7 +1,30 @@
 <script lang="ts">
 	import Banner from '$components/layout/Banner.svelte';
 	import Table from '$components/Table.svelte';
-	import { get_teams, get_events, get_team_events } from '$lib';
+	import { appWindow as app_window } from '@tauri-apps/api/window';
+	import {
+		get_teams as get_teams_inner,
+		get_events as get_events_inner,
+		get_team_events as get_team_events_inner
+	} from '$lib';
+
+	async function get_events() {
+		const events = await get_events_inner();
+		if (!events) app_window.close();
+		return events!;
+	}
+
+	async function get_teams() {
+		const teams = await get_teams_inner();
+		if (!teams) app_window.close();
+		return teams!;
+	}
+
+	async function get_team_events(id: number) {
+		const events = await get_team_events_inner(id);
+		if (!events) app_window.close();
+		return events!;
+	}
 </script>
 
 <Banner title="Event Entries" subtitle="See which events each team has entered." />

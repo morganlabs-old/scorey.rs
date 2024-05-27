@@ -1,10 +1,5 @@
 <script lang="ts">
-	import {
-		update_team as update_team_inner,
-		get_team as get_team_inner,
-		new_popup_window,
-		type Team
-	} from '$lib';
+	import { update_team, get_team as get_team_inner, new_popup_window, type Team } from '$lib';
 	import { appWindow as app_window } from '@tauri-apps/api/window';
 
 	export let data: { id: number };
@@ -19,22 +14,12 @@
 
 	async function get_team() {
 		const team = await get_team_inner(id);
-		if (!team) return app_window.close();
-		new_team.id = team.id;
-		new_team.name = team.name;
-		new_team.individual = team.individual;
-		new_team.points = team.points;
-		return team;
-	}
+		if (!team) app_window.close();
 
-	async function update_team() {
-		try {
-			await update_team_inner(new_team);
-			alert('Updated team sucessfully.');
-		} catch (e) {
-			console.error(e);
-			alert('Failed to update team.');
-		}
+		new_team.id = team!.id;
+		new_team.name = team!.name;
+		new_team.individual = team!.individual;
+		new_team.points = team!.points;
 	}
 
 	const select_events = (team: Team) =>
@@ -42,7 +27,7 @@
 </script>
 
 {#await get_team() then team}
-	<form on:submit={update_team}>
+	<form on:submit={() => update_team(new_team)}>
 		<label>
 			<input type="text" bind:value={new_team.name} />
 			<span>Team Name</span>
@@ -64,6 +49,4 @@
 			<button class="primary" type="submit">Save</button>
 		</div>
 	</form>
-{:catch error}
-	<p>{error.message}</p>
 {/await}

@@ -4,15 +4,16 @@
 	import {
 		type Participant,
 		get_participants as get_participants_inner,
-		delete_participant as delete_participant_inner,
+		delete_participant,
 		get_teams,
 		new_popup_window
 	} from '$lib';
+	import { appWindow as app_window } from '@tauri-apps/api/window';
 
 	async function get_participants() {
 		const participants = await get_participants_inner();
-		if (!participants) return [];
-		return participants;
+		if (!participants) app_window.close();
+		return participants!;
 	}
 
 	const add_participant = async () => {
@@ -33,17 +34,6 @@
 			`/edit/participant?id=${participant.id}`,
 			`Editing ${participant.first_name} ${participant.last_name}`
 		);
-
-	async function delete_participant(participant_id: number) {
-		try {
-			await delete_participant_inner(participant_id);
-			alert('Deleted participant sucessfully.');
-			location.reload();
-		} catch (e) {
-			alert(`Failed to delete participant.\n${e}`);
-			console.error(e);
-		}
-	}
 </script>
 
 <Banner title="Participants">
@@ -69,17 +59,16 @@
 					<button class="edit_btn" on:click={() => edit_participant(participant)}>Edit</button>
 				</th>
 				<th class="delete">
-					<button class="delete_btn" on:click={() => delete_participant(participant.id)}
-						>Delete</button
+					<button
+						class="delete_btn"
+						on:click={() => {
+							delete_participant(participant.id);
+							location.reload();
+						}}>Delete</button
 					>
 				</th>
 			</tr>
 		{/each}
-	{:catch error}
-		<p class="error">
-			Failed to get teams...<br />
-		</p>
-		<pre>{error}</pre>
 	{/await}
 </Table>
 

@@ -1,14 +1,16 @@
 <script lang="ts">
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
-	import { get_teams, delete_team as delete_team_inner, new_popup_window, type Team } from '$lib';
+	import { get_teams as get_teams_inner, delete_team, new_popup_window, type Team } from '$lib';
+	import { appWindow as app_window } from '@tauri-apps/api/window';
 
 	const add_team = () => new_popup_window('/new/team', 'Add new team');
 	const edit_team = (team: Team) => new_popup_window(`/edit/team?id=${team.id}`, 'Edit team');
 
-	async function delete_team(team_id: number) {
-		await delete_team_inner(team_id);
-		location.reload();
+	async function get_teams() {
+		const teams = await get_teams_inner();
+		if (!teams) app_window.close();
+		return teams!;
 	}
 </script>
 
@@ -30,15 +32,16 @@
 					><button class="edit_btn" on:click={() => edit_team(team)}>Edit</button>
 				</th>
 				<th class="delete"
-					><button class="edit_btn" on:click={() => delete_team(team.id)}>Delete</button>
+					><button
+						class="edit_btn"
+						on:click={() => {
+							delete_team(team.id);
+							location.reload();
+						}}>Delete</button
+					>
 				</th>
 			</tr>
 		{/each}
-	{:catch error}
-		<p class="error">
-			Failed to get teams...<br />
-		</p>
-		<pre>{error}</pre>
 	{/await}
 </Table>
 

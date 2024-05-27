@@ -2,11 +2,14 @@
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
 	import { get_teams } from '$lib';
+	import { appWindow as app_window } from '@tauri-apps/api/window';
 
 	async function get_teams_and_sort() {
 		const teams = await get_teams();
-		teams.sort((a, b) => b.points - a.points);
-		return teams;
+		if (!teams) app_window.close();
+
+		teams!.sort((a, b) => b.points - a.points);
+		return teams!;
 	}
 </script>
 
@@ -20,7 +23,5 @@
 				<td class="points">{team.points}</td>
 			</tr>
 		{/each}
-	{:catch error}
-		<p>{error.message}</p>
 	{/await}
 </Table>

@@ -1,9 +1,5 @@
 <script lang="ts">
-	import {
-		update_event as update_event_inner,
-		get_event as get_event_inner,
-		type Event
-	} from '$lib';
+	import { update_event, get_event as get_event_inner, type Event } from '$lib';
 	import { appWindow as app_window } from '@tauri-apps/api/window';
 
 	export let data: { id: number };
@@ -17,24 +13,16 @@
 
 	async function get_event() {
 		const event = await get_event_inner(id);
-		new_event.id = event.id;
-		new_event.name = event.name;
-		new_event.event_type = event.event_type;
-	}
+		if (!event) app_window.close();
 
-	async function update_event() {
-		try {
-			await update_event_inner(new_event);
-			alert('Updated event sucessfully.');
-		} catch (e) {
-			console.error(e);
-			alert('Failed to update event.');
-		}
+		new_event.id = event!.id;
+		new_event.name = event!.name;
+		new_event.event_type = event!.event_type;
 	}
 </script>
 
 {#await get_event() then}
-	<form on:submit={update_event}>
+	<form on:submit={() => update_event(new_event)}>
 		<label>
 			<input type="text" bind:value={new_event.name} />
 			<span>Name</span>
@@ -51,6 +39,4 @@
 			<button class="primary" type="submit">Save</button>
 		</div>
 	</form>
-{:catch error}
-	<p>{error.message}</p>
 {/await}

@@ -18,19 +18,20 @@
 	$: final_events = [team_events, to_enroll].flat().filter((x) => !to_unenroll.includes(x));
 
 	async function get_events() {
-		try {
-			const events = await get_events_inner();
-			team_events = await get_team_events_inner(id);
-			if (events.length === 0) {
-				alert('No events currently exist. Please add some and try again.');
-				app_window.close();
-			}
+		const events = await get_events_inner();
+		if (!events) app_window.close();
 
-			return events;
-		} catch (e) {
-			console.error(e);
-			alert('Failed to get events.');
+		const db_team_events = await get_team_events_inner(id);
+		if (!db_team_events) app_window.close();
+
+		team_events = db_team_events!;
+
+		if (events!.length === 0) {
+			alert('No events currently exist. Please add some and try again.');
+			app_window.close();
 		}
+
+		return events!;
 	}
 
 	async function enroll() {

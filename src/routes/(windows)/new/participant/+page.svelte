@@ -18,10 +18,11 @@
 
 	async function get_teams() {
 		const teams = await get_teams_inner();
-		if (teams.length === 1) {
+		if (!teams) app_window.close();
+		else if (teams.length === 1) {
 			team_selector_enabled = false;
 		}
-		return teams;
+		return teams!;
 	}
 </script>
 

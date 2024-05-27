@@ -1,20 +1,17 @@
 <script lang="ts">
 	import Table from '$components/Table.svelte';
 	import Banner from '$components/layout/Banner.svelte';
-	import {
-		type Event,
-		get_events,
-		delete_event as delete_event_inner,
-		new_popup_window
-	} from '$lib';
+	import { type Event, get_events as get_events_inner, delete_event, new_popup_window } from '$lib';
+	import { appWindow as app_window } from '@tauri-apps/api/window';
 
 	const add_event = () => new_popup_window('/new/event', 'Add new event');
 	const edit_event = (event: Event) =>
 		new_popup_window(`/edit/event?id=${event.id}`, `Editing ${event.name}`);
 
-	async function delete_event(event_id: number) {
-		await delete_event_inner(event_id);
-		location.reload();
+	async function get_events() {
+		const events = await get_events_inner();
+		if (!events) app_window.close();
+		return events!;
 	}
 </script>
 
@@ -33,15 +30,16 @@
 					><button class="edit_btn" on:click={() => edit_event(event)}>Edit</button></th
 				>
 				<th class="delete"
-					><button class="delete_btn" on:click={() => delete_event(event.id)}>Delete</button></th
+					><button
+						class="delete_btn"
+						on:click={() => {
+							delete_event(event.id);
+							location.reload();
+						}}>Delete</button
+					></th
 				>
 			</tr>
 		{/each}
-	{:catch error}
-		<p class="error">
-			Failed to get events...<br />
-		</p>
-		<pre>{error}</pre>
 	{/await}
 </Table>
 

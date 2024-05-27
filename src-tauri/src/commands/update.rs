@@ -3,16 +3,10 @@ use crate::utils::connect_to_db;
 use tauri::AppHandle;
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn update_team(
-    app: AppHandle,
-    id: i32,
-    name: String,
-    individual: bool,
-    points: i32,
-) -> Result<Team, String> {
+pub fn update_team(app: AppHandle, id: i32, name: String, points: i32) -> Result<Team, String> {
     let database = connect_to_db(app);
     let updated_team = database
-        .update_team(id, name, individual, points)
+        .update_team(id, name, points)
         .map_err(|e| e.to_string())?;
 
     Ok(updated_team)

@@ -30,6 +30,22 @@ impl Default for Database {
 }
 
 impl Database {
+    /// Initialise the database file.
+    ///
+    /// # Arguments
+    ///
+    /// * `app_data_dir` - The application data directory.
+    /// * `run_migrations` - Whether to run migrations.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` indicating success or failure.
+    ///
+    /// # Errors
+    ///
+    /// * If the database file cannot be created.
+    /// * If the database connection fails.
+    /// * If the migrations fail.
     pub fn init(&mut self, app_data_dir: PathBuf, run_migrations: bool) -> Result<()> {
         self.path.push(app_data_dir);
         self.path.push("scorey.db");
@@ -42,6 +58,15 @@ impl Database {
         Ok(())
     }
 
+    /// Connect to the database.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing the database connection.
+    ///
+    /// # Errors
+    ///
+    /// * If the connection fails.
     fn connect(&self) -> Result<SqliteConnection> {
         let path = &self.path.to_str();
         let path = match path {
@@ -56,6 +81,15 @@ impl Database {
         SqliteConnection::establish(path).map_err(|_| Error::DatabaseConnectionFailure)
     }
 
+    /// Run any pending database migrations.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` indicating success or failure.
+    ///
+    /// # Errors
+    ///
+    /// * If the migrations fail.
     fn run_migrations(&self) -> Result<()> {
         println!("Running any possible database migrations...");
         let mut connection = self.connect()?;
@@ -68,6 +102,15 @@ impl Database {
 
     // Ensure Stuff Happens
 
+    /// Ensure the database directory exists.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` indicating success or failure.
+    ///
+    /// # Errors
+    ///
+    /// * If the directory cannot be created.
     fn ensure_db_dir_exists(&self) -> Result<()> {
         let dir = &self.path.parent().unwrap();
         if !dir.exists() {
@@ -80,15 +123,22 @@ impl Database {
         Ok(())
     }
 
+    /// Ensure the database file exists.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` indicating success or failure.
+    ///
+    /// # Errors
+    ///
+    /// * If the database directory cannot be created.
+    /// * If the database cannot be created.
     fn ensure_db_exists(&self) -> Result<()> {
         self.ensure_db_dir_exists()?;
         let path = &self.path;
 
         if !path.exists() {
-            fs::File::create(path).map_err(|_| {
-                let path = &path.to_str().unwrap_or("<Failed to unwrap path>");
-                Error::DatabaseCreation(path.to_string())
-            })?;
+            fs::File::create(path).map_err(|_| Error::DatabaseCreation(path.clone()))?;
         }
 
         Ok(())

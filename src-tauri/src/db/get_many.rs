@@ -7,6 +7,16 @@ use crate::prelude::*;
 use diesel::prelude::*;
 
 impl Database {
+    /// Get all teams from the database.
+    ///
+    /// # Returns
+    ///
+    /// A vector of all teams.
+    ///
+    /// # Errors
+    ///
+    /// * If the query fails.
+    /// * If the connection to the database fails.
     pub fn get_teams(&self) -> Result<Vec<Team>> {
         use schema::team::dsl::*;
 
@@ -18,6 +28,16 @@ impl Database {
         Ok(teams)
     }
 
+    /// Get all participants from the database.
+    ///
+    /// # Returns
+    ///
+    /// A vector of all participants.
+    ///
+    /// # Errors
+    ///
+    /// * If the query fails.
+    /// * If the connection to the database fails.
     pub fn get_participants(&self) -> Result<Vec<ParticipantAndTeam>> {
         use schema::participant::dsl::*;
         use schema::team::dsl as team_dsl;
@@ -40,6 +60,16 @@ impl Database {
         Ok(participants)
     }
 
+    /// Get all events from the database.
+    ///
+    /// # Returns
+    ///
+    /// A vector of all events.
+    ///
+    /// # Errors
+    ///
+    /// * If the query fails.
+    /// * If the connection to the database fails.
     pub fn get_events(&self) -> Result<Vec<Event>> {
         use schema::event::dsl::*;
 
@@ -64,6 +94,20 @@ impl Database {
         Ok(events)
     }
 
+    /// Gets all of the teams that are enrolled in an event
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - The ID of the team.
+    ///
+    /// # Returns
+    ///
+    /// A vector of event IDs.
+    ///
+    /// # Errors
+    ///
+    /// * If the query fails.
+    /// * If the connection to the database fails.
     pub fn get_teams_enrolled_in_event(&self, id: i32) -> Result<Vec<i32>> {
         let event_entries = self.get_event_entries()?;
         let enrolled = event_entries
@@ -75,18 +119,46 @@ impl Database {
         Ok(enrolled)
     }
 
-    pub fn get_team_members(&self, team_id: i32) -> Result<Vec<Participant>> {
+    /// Gets the members of a team
+    ///
+    /// # Arguments
+    ///
+    /// * `id` The ID of the team
+    ///
+    /// # Return
+    ///
+    /// A vector of the participants within the team.
+    ///
+    /// # Errors
+    ///
+    /// * If the query fails.
+    /// * If the connection to the database fails
+    pub fn get_team_members(&self, id: i32) -> Result<Vec<Participant>> {
         use schema::participant::dsl;
 
         let mut connection = self.connect()?;
         let team_members = dsl::participant
-            .filter(dsl::team_id.eq(team_id))
+            .filter(dsl::team_id.eq(id))
             .load::<Participant>(&mut connection)
             .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
 
         Ok(team_members)
     }
 
+    /// Gets the events that a team is enrolled in
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - The ID of the team
+    ///
+    /// # Returns
+    ///
+    /// A vector of event IDs
+    ///
+    /// # Errors
+    ///
+    /// * If the query fails
+    /// * If the connection to the database fails
     pub fn get_team_events(&self, id: i32) -> Result<Vec<i32>> {
         use schema::event_entry::dsl;
 
@@ -100,6 +172,16 @@ impl Database {
         Ok(team_events)
     }
 
+    /// Gets all of the event entries
+    ///
+    /// # Returns
+    ///
+    /// A vector of event entries
+    ///
+    /// # Errors
+    ///
+    /// * If the query fails
+    /// * If the connection to the database fails
     pub fn get_event_entries(&self) -> Result<Vec<EventEntry>> {
         use schema::event_entry::dsl::*;
 

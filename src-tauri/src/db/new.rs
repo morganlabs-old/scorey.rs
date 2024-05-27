@@ -10,6 +10,16 @@ use diesel::prelude::*;
 use diesel::result::DatabaseErrorKind as DBErrorKind;
 use diesel::result::Error::DatabaseError as DBError;
 
+/// A simple helper function to quickly and easily map the errors output by Diesel into
+/// Scorey-specific errors.
+///
+/// # Arguments
+///
+/// * `e` - The error to map.
+///
+/// # Returns
+///
+/// The mapped error.
 fn map_err(e: diesel::result::Error) -> Error {
     match e {
         DBError(kind, _) => match kind {
@@ -23,6 +33,23 @@ fn map_err(e: diesel::result::Error) -> Error {
 }
 
 impl Database {
+    /// Create a new team in the database.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - The name of the team.
+    /// * `individual` - Whether the team is an individual team.
+    ///
+    /// # Returns
+    ///
+    /// The newly created team.
+    ///
+    /// # Errors
+    ///
+    /// * If the name is empty.
+    /// * If the name contains characters other than letters and spaces.
+    /// * If the creation fails.
+    /// * If the connection to the database fails.
     pub fn new_team(&self, name: &str, individual: bool) -> Result<Team> {
         use schema::team;
 
@@ -46,6 +73,27 @@ impl Database {
         Ok(db_team)
     }
 
+    /// Create a new participant in the database.
+    ///
+    /// # Arguments
+    ///
+    /// * `first_name` - The first name of the participant.
+    /// * `last_name` - The last name of the participant.
+    /// * `team_id` - The ID of the team the participant is on.
+    ///
+    /// # Returns
+    ///
+    /// The newly created participant.
+    ///
+    /// # Errors
+    ///
+    /// * If the first name is empty.
+    /// * If the first name contains characters other than letters.
+    /// * If the last name is empty.
+    /// * If the last name contains characters other than letters.
+    /// * If the team ID is less than or equal to 0.
+    /// * If the creation fails.
+    /// * If the connection to the database fails.
     pub fn new_participant(
         &self,
         first_name: &str,
@@ -90,6 +138,24 @@ impl Database {
         Ok(db_participant)
     }
 
+    /// Create a new event in the database.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - The name of the event.
+    /// * `event_type` - The type of the event.
+    ///
+    /// # Returns
+    ///
+    /// The newly created event.
+    ///
+    /// # Errors
+    ///
+    /// * If the name is empty.
+    /// * If the name contains characters other than letters and spaces.
+    /// * If the event type is not "ACADEMIC" or "SPORT".
+    /// * If the creation fails.
+    /// * If the connection to the database fails.
     pub fn new_event(&self, name: &str, event_type: &str) -> Result<Event> {
         use schema::event;
 
@@ -124,6 +190,23 @@ impl Database {
         Ok(db_event)
     }
 
+    /// Create a new event entry in the database.
+    ///
+    /// # Arguments
+    ///
+    /// * `team_id` - The ID of the team that is entering the event.
+    /// * `event_id` - The ID of the event that the team is entering.
+    ///
+    /// # Returns
+    ///
+    /// The newly created event entry.
+    ///
+    /// # Errors
+    ///
+    /// * If the team ID is less than or equal to 0.
+    /// * If the event ID is less than or equal to 0.
+    /// * If the creation fails.
+    /// * If the connection to the database fails.
     pub fn new_event_entry(&self, team_id: i32, event_id: i32) -> Result<EventEntry> {
         use schema::event_entry;
 

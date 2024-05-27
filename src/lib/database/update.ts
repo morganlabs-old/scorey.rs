@@ -6,7 +6,6 @@ export async function update_team(team: Team) {
 		const db_team = await i<Team>('update_team', {
 			id: team.id,
 			name: team.name,
-			individual: team.individual,
 			points: team.points
 		});
 

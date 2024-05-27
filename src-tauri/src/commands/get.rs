@@ -5,9 +5,9 @@ use tauri::AppHandle;
 macro_rules! create_get_command {
     ($fn_name:ident, $return_type:ty) => {
         #[tauri::command(rename_all = "snake_case")]
-        pub fn $fn_name(app: AppHandle, item_id: i32) -> Result<$return_type, String> {
+        pub fn $fn_name(app: AppHandle, id: i32) -> Result<$return_type, String> {
             let database = connect_to_db(app);
-            let item = database.$fn_name(item_id).map_err(|e| e.to_string())?;
+            let item = database.$fn_name(id).map_err(|e| e.to_string())?;
             Ok(item)
         }
     };

@@ -73,7 +73,7 @@ impl Database {
         if !dir.exists() {
             fs::create_dir(dir).map_err(|_| {
                 let dir = &dir.to_str().unwrap_or("<Failed to unwrap path>");
-                Error::DatabaseCreation(f!("Failed to create database directory at {dir}"))
+                Error::DatabaseDirectoryCreation(dir.to_string())
             })?;
         }
 
@@ -87,7 +87,7 @@ impl Database {
         if !path.exists() {
             fs::File::create(path).map_err(|_| {
                 let path = &path.to_str().unwrap_or("<Failed to unwrap path>");
-                Error::DatabaseCreation(f!("Failed to create database file at {path}"))
+                Error::DatabaseCreation(path.to_string())
             })?;
         }
 

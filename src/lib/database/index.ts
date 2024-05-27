@@ -1,3 +1,5 @@
+import { exit } from '@tauri-apps/api/process';
+
 export * from './delete';
 export * from './get';
 export * from './get_many';
@@ -7,43 +9,99 @@ export * from './update';
 export function handle_error(e: Record<string, string>) {
 	console.error('Error occured', e);
 
-	const { type, message } = e;
+	const { type, info } = e;
 
 	switch (type) {
-		case 'UniqueConstraintFailed': {
-			const field = message.split(':')[1].replaceAll('.', ' ');
+		case 'Generic': {
+			alert('An error has occured.');
+			break;
+		}
+
+		// Database errors
+		case 'DatabaseDirectoryCreation': {
+			alert(
+				`Failed to create SQLite database directory at ${info}. Do you have write permissions to this directory?`
+			);
+			exit(1);
+			break;
+		}
+		case 'DatabaseCreation': {
+			alert(
+				`Failed to create SQLite database file at ${info}. Do you have write permissions to this directory?`
+			);
+			exit(1);
+			break;
+		}
+		case 'DatabaseConnectionFailure': {
+			alert(`Failed to connect to SQLite database.`);
+			exit(1);
+			break;
+		}
+		case 'DatabaseMigrationFailure': {
+			alert(`Failed to push migration(s) to SQLite database.`);
+			exit(1);
+			break;
+		}
+		case 'DatabaseQueryFailure': {
+			alert(`Failed to query database:\n${info}.`);
+			break;
+		}
+		case 'DatabaseNewEntryFailure': {
+			alert(`Failed to create new entry in database:\n${info}.`);
+			break;
+		}
+		case 'DatabaseDeleteEntryFailure': {
+			alert(`Failed to delete database item:\n${info}.`);
+			break;
+		}
+		case 'DatabaseUpdateEntryFailure': {
+			alert(`Failed to update value(s) within the database:\n${info}.`);
+			break;
+		}
+
+		// Data modification errors
+		case 'ValidationIncorrectEventType': {
+			alert(`Event type "${info}" is not valid. Valid types are:\nACADEMIC\nSPORT.`);
+			break;
+		}
+		case 'ValidationUniqueConstraintFailed': {
+			const field = info.split(':')[1].replaceAll('.', ' ');
 			alert(`Field "${field}" must be unique.`);
 			break;
 		}
-		case 'FieldIsRequired': {
-			const field = message.split(':')[1].replaceAll('.', ' ');
+		case 'ValidationCheckViolation': {
+			alert(`A check has been violated:\n${info}`);
+			break;
+		}
+		case 'ValidationFieldIsRequired': {
+			const field = info.split(':')[1].replaceAll('.', ' ');
 			alert(`Field "${field}" is required.`);
 			break;
 		}
-		case 'MustOnlyContainLettersAndSpaces': {
-			const field = message.split(':')[1].replaceAll('.', ' ');
+		case 'ValidationMustOnlyContainLettersAndSpaces': {
+			const field = info.split(':')[1].replaceAll('.', ' ');
 			alert(`Field "${field}" must only contain letters and spaces.`);
 			break;
 		}
-		case 'MustOnlyContainLetters': {
-			const field = message.split(':')[1].replaceAll('.', ' ');
+		case 'ValidationMustOnlyContainLetters': {
+			const field = info.split(':')[1].replaceAll('.', ' ');
 			alert(`Field "${field}" must only contain letters.`);
 			break;
 		}
-		case 'CheckViolation': {
-			alert(`A check has been violated:\n${message}`);
+		case 'ValidationCannotDeleteNonIndividualTeamWithMembers': {
+			alert('Cannot delete a team with members.');
 			break;
 		}
-		case 'InvalidTeam': {
+		case 'ValidationCannotDeleteEventsWithTeamsEnrolled': {
+			alert('Cannot delete an event with teams enrolled.');
+			break;
+		}
+		case 'ValidationInvalidTeam': {
 			alert(`Please select a team.`);
 			break;
 		}
-		case 'IncorrectEventType': {
-			alert(`Please choose a type of event.`);
-			break;
-		}
 		default: {
-			alert(`Failed to add entry.\n${message || e}`);
+			alert(`Failed to add entry.\n${info}`);
 			break;
 		}
 	}

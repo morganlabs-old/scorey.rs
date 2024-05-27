@@ -8,19 +8,13 @@
 		new_popup_window
 	} from '$lib';
 
-	const add_event = () => new_popup_window('/event/new', 'Add new event');
+	const add_event = () => new_popup_window('/new/event', 'Add new event');
 	const edit_event = (event: Event) =>
-		new_popup_window(`/event/edit?id=${event.id}`, `Editing ${event.name}`);
+		new_popup_window(`/edit/event?id=${event.id}`, `Editing ${event.name}`);
 
 	async function delete_event(event_id: number) {
-		try {
-			await delete_event_inner(event_id);
-			alert('Deleted event sucessfully.');
-			location.reload();
-		} catch (e) {
-			alert(`Failed to delete event.\n${e}`);
-			console.error(e);
-		}
+		await delete_event_inner(event_id);
+		location.reload();
 	}
 </script>
 

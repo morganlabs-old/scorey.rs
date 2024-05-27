@@ -1,6 +1,6 @@
 use crate::db::schema;
 use crate::db::{
-    structs::{Event, Participant, ParticipantAndTeam, Team},
+    structs::{Event, EventEntry, Participant, ParticipantAndTeam, Team},
     Database,
 };
 use crate::prelude::*;
@@ -64,6 +64,17 @@ impl Database {
         Ok(events)
     }
 
+    pub fn get_teams_enrolled_in_event(&self, id: i32) -> Result<Vec<i32>> {
+        let event_entries = self.get_event_entries()?;
+        let enrolled = event_entries
+            .into_iter()
+            .filter(|e| e.event_id == id)
+            .map(|e| e.team_id)
+            .collect::<Vec<_>>();
+
+        Ok(enrolled)
+    }
+
     pub fn get_team_members(&self, team_id: i32) -> Result<Vec<Participant>> {
         use schema::participant::dsl;
 
@@ -76,16 +87,27 @@ impl Database {
         Ok(team_members)
     }
 
-    pub fn get_team_events(&self, team_id: i32) -> Result<Vec<i32>> {
+    pub fn get_team_events(&self, id: i32) -> Result<Vec<i32>> {
         use schema::event_entry::dsl;
 
         let mut connection = self.connect()?;
         let team_events = dsl::event_entry
-            .filter(dsl::team_id.eq(team_id))
+            .filter(dsl::team_id.eq(id))
             .select(dsl::event_id)
             .load::<i32>(&mut connection)
             .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
 
         Ok(team_events)
+    }
+
+    pub fn get_event_entries(&self) -> Result<Vec<EventEntry>> {
+        use schema::event_entry::dsl::*;
+
+        let mut connection = self.connect()?;
+        let event_entries = event_entry
+            .load::<EventEntry>(&mut connection)
+            .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
+
+        Ok(event_entries)
     }
 }

@@ -18,11 +18,12 @@ form {
 		display: grid;
 		grid-template-columns: 1fr auto;
 		column-gap: 2rem;
+		align-items: center;
 		border-bottom: 1px solid rgba(#000000, 0.05);
 		padding-block: 10px;
 		padding-inline: 3px;
 
-		& * {
+		& *:not(button) {
 			font-size: 0.8125rem;
 		}
 

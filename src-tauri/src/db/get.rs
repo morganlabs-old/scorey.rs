@@ -8,12 +8,12 @@ use diesel::prelude::*;
 
 macro_rules! create_get_fn {
     ($fn_name:ident, $schema:ident, $return_type:ty) => {
-        pub fn $fn_name(&self, item_id: i32) -> Result<$return_type> {
-            use schema::$schema::dsl::*;
+        pub fn $fn_name(&self, id: i32) -> Result<$return_type> {
+            use schema::$schema::dsl;
 
             let mut connection = self.connect()?;
-            let db_obj = $schema
-                .filter(id.eq(item_id))
+            let db_obj = dsl::$schema
+                .filter(dsl::id.eq(id))
                 .first::<$return_type>(&mut connection)
                 .map_err(|e| Error::DatabaseQueryFailure(e.to_string()))?;
 

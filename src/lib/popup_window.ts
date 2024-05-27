@@ -20,7 +20,10 @@ export function new_popup_window(
 	const id = uuid();
 	const webview = new WebviewWindow(id, { url, title, width, height, center });
 
-	webview.once('tauri://error', (e) => console.error('Failed to create window', e));
+	webview.once('tauri://error', (e) => {
+		alert('Failed to create new window.\nPlease check console for more information.');
+		console.error('Failed to create window', e);
+	});
 	webview.once('tauri://close-requested', () => location.reload());
 
 	return webview;

@@ -2,12 +2,16 @@ use serde::Serialize;
 use thiserror::Error;
 
 #[derive(Error, Debug, Serialize)]
-#[serde(tag = "type", content = "message")]
+#[serde(tag = "type", content = "info")]
 pub enum Error {
     #[error("Generic {0}")]
     Generic(String),
 
-    #[error("Failed to create SQLite Database.")]
+    // Database Errors
+    #[error("Failed to create SQLite Database directory at path {0}.")]
+    DatabaseDirectoryCreation(String),
+
+    #[error("Failed to create SQLite Database at path {0}.")]
     DatabaseCreation(String),
 
     #[error("Failed to connect to the SQLite Database.")]
@@ -16,36 +20,43 @@ pub enum Error {
     #[error("Failed to push migrations to the SQLite Database.")]
     DatabaseMigrationFailure,
 
+    #[error("Failed to query database.")]
+    DatabaseQueryFailure(String),
+
     #[error("Failed to create a new entry in the SQLite Database: {0}")]
     DatabaseNewEntryFailure(String),
 
-    #[error("Event type {0} is incorrect. Allowed values are ACADEMIC and SPORT.")]
-    IncorrectEventType(String),
-
-    #[error("Failed to query database.")]
-    DatabaseQueryFailure(String),
+    #[error("Failed to delete an entry in the SQLite Database: {0}")]
+    DatabaseDeleteEntryFailure(String),
 
     #[error("Failed to update value(s) in database.\n{0}")]
     DatabaseUpdateEntryFailure(String),
 
-    #[error("Cannot delete a non-individual team that contains members.")]
-    CannotDeleteNonIndividualTeamWithMembers,
+    // Validation Errors
+    #[error("Event type {0} is incorrect. Allowed values are ACADEMIC and SPORT.")]
+    ValidationIncorrectEventType(String),
 
     #[error("A field must be unique.\n{0}")]
-    UniqueConstraintFailed(String),
-
-    #[error("A required field is empty.\n")]
-    FieldIsRequired(String),
+    ValidationUniqueConstraintFailed(String),
 
     #[error("The field {0} has violated a check.")]
-    CheckViolation(String),
+    ValidationCheckViolation(String),
+
+    #[error("A required field is empty.\n")]
+    ValidationFieldIsRequired(String),
 
     #[error("The field {0} must only contain letters and spaces.")]
-    MustOnlyContainLettersAndSpaces(String),
+    ValidationMustOnlyContainLettersAndSpaces(String),
 
     #[error("The field {0} must only contain letters.")]
-    MustOnlyContainLetters(String),
+    ValidationMustOnlyContainLetters(String),
+
+    #[error("Cannot delete a non-individual team that contains members.")]
+    ValidationCannotDeleteNonIndividualTeamWithMembers,
+
+    #[error("Cannot delete an event that has teams enrolled.")]
+    ValidationCannotDeleteEventsWithTeamsEnrolled,
 
     #[error("Please select a valid team.")]
-    InvalidTeam,
+    ValidationInvalidTeam,
 }

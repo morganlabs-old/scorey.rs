@@ -1,16 +1,41 @@
 import { invoke as i } from '@tauri-apps/api/tauri';
+import { handle_error } from '.';
 
-export const delete_team = async (id: number) => await i('delete_team', { id });
-export const delete_participant = async (id: number) => await i('delete_participant', { id });
-export const delete_event = async (id: number) => await i('delete_event', { id });
-export const unenroll_team_in_events = async (team_id: number, events: number[] | number) => {
+export async function delete_team(id: number) {
+	try {
+		await i('delete_team', { id });
+		alert('Team deleted successfully.');
+	} catch (e) {
+		handle_error(e as Record<string, string>);
+	}
+}
+
+export async function delete_participant(id: number) {
+	try {
+		await i('delete_participant', { id });
+		alert('Participant deleted successfully.');
+	} catch (e) {
+		handle_error(e as Record<string, string>);
+	}
+}
+
+export async function delete_event(id: number) {
+	try {
+		await i('delete_event', { id });
+		alert('Event deleted successfully.');
+	} catch (e) {
+		handle_error(e as Record<string, string>);
+	}
+}
+
+export async function unenroll_team_in_events(team_id: number, events: number[] | number) {
 	events = (Array.isArray(events) ? events : [events]) as number[];
 
-	const promises = [];
-
 	for (const event_id of events) {
-		promises.push(i('unenroll_team_in_events', { team_id, event_id }));
+		try {
+			i('unenroll_team_in_events', { team_id, event_id });
+		} catch (e) {
+			handle_error(e as Record<string, string>);
+		}
 	}
-
-	return Promise.all(promises);
-};
+}

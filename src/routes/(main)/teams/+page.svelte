@@ -3,18 +3,12 @@
 	import Banner from '$components/layout/Banner.svelte';
 	import { get_teams, delete_team as delete_team_inner, new_popup_window, type Team } from '$lib';
 
-	const add_team = () => new_popup_window('/team/new', 'Add new team');
-	const edit_team = (team: Team) => new_popup_window(`/team/edit?edit=${team.id}`, 'Edit team');
+	const add_team = () => new_popup_window('/new/team', 'Add new team');
+	const edit_team = (team: Team) => new_popup_window(`/edit/team?id=${team.id}`, 'Edit team');
 
 	async function delete_team(team_id: number) {
-		try {
-			await delete_team_inner(team_id);
-			alert('Deleted team sucessfully.');
-			location.reload();
-		} catch (e) {
-			alert(`Failed to delete team.\n${e}`);
-			console.error(e);
-		}
+		await delete_team_inner(team_id);
+		location.reload();
 	}
 </script>
 

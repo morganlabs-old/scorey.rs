@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { appWindow as app_window } from '@tauri-apps/api/window';
-	import { new_participant, get_teams, type NewParticipant, type Team } from '$lib';
+	import { new_participant, get_teams as get_teams_inner, type NewParticipant } from '$lib';
 
 	$: team_id = 0;
 	$: participant = {
@@ -8,17 +8,20 @@
 		last_name: ''
 	} as NewParticipant;
 
+	$: team_selector_enabled = true;
+
 	async function add_participant() {
 		const db_participant = await new_participant(participant, team_id);
 		if (!db_participant) return;
 		participant = { first_name: '', last_name: '' };
 	}
 
-	function is_selected(teams: Team[], idx: number) {
-		const team = teams[idx];
-		const is_selected = teams.length === 1 && idx === 0;
-		if (is_selected) team_id = team.id;
-		return is_selected;
+	async function get_teams() {
+		const teams = await get_teams_inner();
+		if (teams.length === 1) {
+			team_selector_enabled = false;
+		}
+		return teams;
 	}
 </script>
 
@@ -32,17 +35,21 @@
 		<span>Last Name</span>
 	</label>
 	<label>
-		<select bind:value={team_id}>
-			{#await get_teams() then teams}
-				{#if teams.filter((t) => !t.individual).length > 1}
-					<option value={0} selected>None</option>
+		<select bind:value={team_id} disabled={!team_selector_enabled}>
+			{#await get_teams()}
+				<option>Loading...</option>
+			{:then teams}
+				{#if teams.length === 1}
+					<option value={teams[0].id} selected={true}>
+						{teams[0].name}
+					</option>
+				{:else}
+					{#each teams as team}
+						<option value={team.id} selected={team_id === team.id}>
+							{team.name}
+						</option>
+					{/each}
 				{/if}
-				{#each teams as team, idx}
-					{#if !team.individual}
-						<option value={team.id} selected={(() => is_selected(teams, idx))()}>{team.name}</option
-						>
-					{/if}
-				{/each}
 			{/await}
 		</select>
 		<span>Team Name</span>

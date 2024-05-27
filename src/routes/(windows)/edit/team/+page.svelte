@@ -1,9 +1,14 @@
 <script lang="ts">
-	import { update_team as update_team_inner, get_team as get_team_inner, type Team } from '$lib';
-	import { WebviewWindow, appWindow as app_window } from '@tauri-apps/api/window';
+	import {
+		update_team as update_team_inner,
+		get_team as get_team_inner,
+		new_popup_window,
+		type Team
+	} from '$lib';
+	import { appWindow as app_window } from '@tauri-apps/api/window';
 
-	export let data: { team_id: string };
-	const { team_id } = data;
+	export let data: { id: number };
+	const { id } = data;
 
 	$: new_team = {
 		id: 0,
@@ -13,7 +18,8 @@
 	} as Team;
 
 	async function get_team() {
-		const team = await get_team_inner(+team_id);
+		const team = await get_team_inner(id);
+		if (!team) return app_window.close();
 		new_team.id = team.id;
 		new_team.name = team.name;
 		new_team.individual = team.individual;
@@ -31,17 +37,8 @@
 		}
 	}
 
-	function select_events(team: Team) {
-		const webview = new WebviewWindow(`enroll_${team.id}`, {
-			url: `http://localhost:5173/team/enroll?id=${team.id}`,
-			width: 500,
-			height: 270,
-			center: true
-		});
-
-		webview.once('tauri://created', () => webview.setTitle(`Enrolling ${team.name} into events`));
-		webview.once('tauri://error', (e) => console.error('Failed to create window', e));
-	}
+	const select_events = (team: Team) =>
+		new_popup_window(`/enroll/team?id=${team.id}`, `Enroll ${team.name} into events`);
 </script>
 
 {#await get_team() then team}

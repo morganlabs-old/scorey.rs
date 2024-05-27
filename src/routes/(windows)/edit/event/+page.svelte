@@ -6,8 +6,8 @@
 	} from '$lib';
 	import { appWindow as app_window } from '@tauri-apps/api/window';
 
-	export let data: { event_id: string };
-	const { event_id } = data;
+	export let data: { id: number };
+	const { id } = data;
 
 	$: new_event = {
 		id: 0,
@@ -16,7 +16,7 @@
 	} as Event;
 
 	async function get_event() {
-		const event = await get_event_inner(+event_id);
+		const event = await get_event_inner(id);
 		new_event.id = event.id;
 		new_event.name = event.name;
 		new_event.event_type = event.event_type;

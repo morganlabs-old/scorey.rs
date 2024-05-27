@@ -3,15 +3,21 @@
 	import Banner from '$components/layout/Banner.svelte';
 	import {
 		type Participant,
-		get_participants,
+		get_participants as get_participants_inner,
 		delete_participant as delete_participant_inner,
 		get_teams,
 		new_popup_window
 	} from '$lib';
 
+	async function get_participants() {
+		const participants = await get_participants_inner();
+		if (!participants) return [];
+		return participants;
+	}
+
 	const add_participant = async () => {
 		const non_individual_teams = await get_teams().then((teams) =>
-			teams.filter((team) => !team.individual)
+			(teams || []).filter((team) => !team.individual)
 		);
 
 		if (non_individual_teams.length === 0) {
@@ -19,12 +25,12 @@
 			return;
 		}
 
-		new_popup_window('/participant/new', 'Add new participant');
+		new_popup_window('/new/participant', 'Add new participant');
 	};
 
 	const edit_participant = (participant: Participant) =>
 		new_popup_window(
-			`/participant/edit?id=${participant.id}`,
+			`/edit/participant?id=${participant.id}`,
 			`Editing ${participant.first_name} ${participant.last_name}`
 		);
 

@@ -1,7 +1,26 @@
 import { invoke as i } from '@tauri-apps/api/tauri';
-import type { Team, Event, Participant } from './';
+import { handle_error, type Team, type Event, type Participant } from './';
 
-export const get_team = async (team_id: number) => await i<Team>('get_team', { team_id });
-export const get_participant = async (participant_id: number) =>
-	await i<Participant>('get_participant', { participant_id });
-export const get_event = async (event_id: number) => await i<Event>('get_event', { event_id });
+export async function get_team(id: number) {
+	try {
+		return await i<Team>('get_team', { id });
+	} catch (e) {
+		handle_error(e as Record<string, string>);
+	}
+}
+
+export async function get_participant(id: number) {
+	try {
+		return await i<Participant>('get_participant', { id });
+	} catch (e) {
+		handle_error(e as Record<string, string>);
+	}
+}
+
+export async function get_event(id: number) {
+	try {
+		return await i<Event>('get_event', { id });
+	} catch (e) {
+		handle_error(e as Record<string, string>);
+	}
+}

@@ -13,9 +13,9 @@ use diesel::result::Error::DatabaseError as DBError;
 fn map_err(e: diesel::result::Error) -> Error {
     match e {
         DBError(kind, _) => match kind {
-            DBErrorKind::UniqueViolation => Error::UniqueConstraintFailed(e.to_string()),
-            DBErrorKind::NotNullViolation => Error::FieldIsRequired(e.to_string()),
-            DBErrorKind::CheckViolation => Error::CheckViolation(e.to_string()),
+            DBErrorKind::UniqueViolation => Error::ValidationUniqueConstraintFailed(e.to_string()),
+            DBErrorKind::NotNullViolation => Error::ValidationFieldIsRequired(e.to_string()),
+            DBErrorKind::CheckViolation => Error::ValidationCheckViolation(e.to_string()),
             _ => Error::DatabaseNewEntryFailure(e.to_string()),
         },
         _ => Error::DatabaseNewEntryFailure(e.to_string()),
@@ -27,9 +27,11 @@ impl Database {
         use schema::team;
 
         if name.is_empty() {
-            return Err(Error::FieldIsRequired(":team.name".into()));
+            return Err(Error::ValidationFieldIsRequired(":team.name".into()));
         } else if !name.chars().all(|c| c.is_alphabetic() || c.is_whitespace()) {
-            return Err(Error::MustOnlyContainLettersAndSpaces(":team.name".into()));
+            return Err(Error::ValidationMustOnlyContainLettersAndSpaces(
+                ":team.name".into(),
+            ));
         }
 
         let mut connection = self.connect()?;
@@ -53,19 +55,23 @@ impl Database {
         use schema::participant;
 
         if first_name.is_empty() {
-            return Err(Error::FieldIsRequired(":.first name".into()));
+            return Err(Error::ValidationFieldIsRequired(":.first name".into()));
         } else if !first_name.chars().all(|c| c.is_alphabetic()) {
-            return Err(Error::MustOnlyContainLetters(":.first name".into()));
+            return Err(Error::ValidationMustOnlyContainLetters(
+                ":.first name".into(),
+            ));
         }
 
         if last_name.is_empty() {
-            return Err(Error::FieldIsRequired(":.last name".into()));
+            return Err(Error::ValidationFieldIsRequired(":.last name".into()));
         } else if !last_name.chars().all(|c| c.is_alphabetic()) {
-            return Err(Error::MustOnlyContainLetters(":.last name".into()));
+            return Err(Error::ValidationMustOnlyContainLetters(
+                ":.last name".into(),
+            ));
         }
 
         if team_id <= 0 {
-            return Err(Error::InvalidTeam);
+            return Err(Error::ValidationInvalidTeam);
         }
 
         let mut connection = self.connect()?;
@@ -88,14 +94,16 @@ impl Database {
         use schema::event;
 
         if name.is_empty() {
-            return Err(Error::FieldIsRequired(":event.name".into()));
+            return Err(Error::ValidationFieldIsRequired(":event.name".into()));
         } else if !name.chars().all(|c| c.is_alphabetic() || c.is_whitespace()) {
-            return Err(Error::MustOnlyContainLettersAndSpaces(":event.name".into()));
+            return Err(Error::ValidationMustOnlyContainLettersAndSpaces(
+                ":event.name".into(),
+            ));
         }
 
         let event_type = match event_type {
             "ACADEMIC" | "SPORT" => event_type,
-            _ => return Err(Error::IncorrectEventType(event_type.into())),
+            _ => return Err(Error::ValidationIncorrectEventType(event_type.into())),
         };
 
         let mut connection = self.connect()?;

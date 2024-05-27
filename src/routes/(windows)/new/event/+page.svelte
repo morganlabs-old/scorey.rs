@@ -16,7 +16,7 @@
 
 <form on:submit={add_event}>
 	<label>
-		<input type="text" bind:value={event.name} />
+		<input type="text" placeholder="Speedreading" bind:value={event.name} />
 		<span>Name</span>
 	</label>
 	<label>

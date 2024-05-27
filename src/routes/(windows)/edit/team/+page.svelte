@@ -20,6 +20,8 @@
 		new_team.name = team!.name;
 		new_team.individual = team!.individual;
 		new_team.points = team!.points;
+
+		return team!;
 	}
 
 	const select_events = (team: Team) =>
@@ -29,11 +31,11 @@
 {#await get_team() then team}
 	<form on:submit={() => update_team(new_team)}>
 		<label>
-			<input type="text" bind:value={new_team.name} />
+			<input type="text" placeholder="An Amazing Team" bind:value={new_team.name} />
 			<span>Team Name</span>
 		</label>
 		<label>
-			<input type="number" bind:value={new_team.points} />
+			<input type="number" placeholder="0" bind:value={new_team.points} />
 			<span>Points</span>
 		</label>
 		<label>

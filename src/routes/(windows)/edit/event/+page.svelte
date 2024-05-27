@@ -24,7 +24,7 @@
 {#await get_event() then}
 	<form on:submit={() => update_event(new_event)}>
 		<label>
-			<input type="text" bind:value={new_event.name} />
+			<input type="text" placeholder="Speedreading" bind:value={new_event.name} />
 			<span>Name</span>
 		</label>
 		<label>

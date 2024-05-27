@@ -28,11 +28,11 @@
 
 <form on:submit={add_participant}>
 	<label>
-		<input type="text" bind:value={participant.first_name} />
+		<input type="text" placeholder="John" bind:value={participant.first_name} />
 		<span>First Name</span>
 	</label>
 	<label>
-		<input type="text" bind:value={participant.last_name} />
+		<input type="text" placeholder="Doe" bind:value={participant.last_name} />
 		<span>Last Name</span>
 	</label>
 	<label>

@@ -31,7 +31,11 @@
 
 <form on:submit={add_team}>
 	<label>
-		<input type="text" bind:value={team.name} />
+		<input
+			type="text"
+			placeholder={`${participant.first_name ? participant.first_name + 's' : 'An'} Amazing Team`}
+			bind:value={team.name}
+		/>
 		<span>Team Name</span>
 	</label>
 	<label>
@@ -40,11 +44,11 @@
 	</label>
 	{#if team.individual}
 		<label>
-			<input type="text" bind:value={participant.first_name} />
+			<input type="text" placeholder="John" bind:value={participant.first_name} />
 			<span>Participant First Name</span>
 		</label>
 		<label>
-			<input type="text" bind:value={participant.last_name} />
+			<input type="text" placeholder="Doe" bind:value={participant.last_name} />
 			<span>Participant Last Name</span>
 		</label>
 	{/if}

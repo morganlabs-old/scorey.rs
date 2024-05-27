@@ -2,9 +2,7 @@ import { invoke as i } from '@tauri-apps/api/tauri';
 import { handle_error } from './';
 import type { Team, Event, Participant, NewTeam, NewEvent, NewParticipant } from './';
 
-export async function new_team(team: NewTeam) {
-	const { name, individual } = team;
-
+export async function new_team({ name, individual }: NewTeam) {
 	try {
 		const team = await i<Team>('new_team', { name, individual });
 		alert(`Team "${team.name}" added successfully!`);
@@ -14,9 +12,7 @@ export async function new_team(team: NewTeam) {
 	}
 }
 
-export async function new_participant(participant: NewParticipant, team_id: number) {
-	const { first_name, last_name } = participant;
-
+export async function new_participant({ first_name, last_name }: NewParticipant, team_id: number) {
 	try {
 		const participant = await i<Participant>('new_participant', { first_name, last_name, team_id });
 		alert(`Participant "${participant.first_name} ${participant.last_name}" added scucessfully!`);
@@ -26,9 +22,7 @@ export async function new_participant(participant: NewParticipant, team_id: numb
 	}
 }
 
-export async function new_event(event: NewEvent) {
-	const { name, event_type } = event;
-
+export async function new_event({ name, event_type }: NewEvent) {
 	try {
 		const db_event = await i<Event>('new_event', { name, event_type });
 		alert(`Event "${db_event.name}" added successfully!`);

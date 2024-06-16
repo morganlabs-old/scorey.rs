@@ -22,6 +22,7 @@
 		else if (teams.length === 1) {
 			team_selector_enabled = false;
 		}
+		team_id = teams![0].id;
 		return teams!.filter((t) => !t.individual);
 	}
 </script>

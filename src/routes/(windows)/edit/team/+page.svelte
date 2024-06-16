@@ -39,7 +39,9 @@
 			<span>Points</span>
 		</label>
 		<label>
-			<button on:click|preventDefault={() => select_events(team)}>Select events</button>
+			<button type="button" on:click|preventDefault={() => select_events(team)}
+				>Select events</button
+			>
 			<span>Events</span>
 		</label>
 		<label>

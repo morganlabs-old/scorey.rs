@@ -50,7 +50,7 @@
 </script>
 
 {#await get_participant() then}
-	<form on:submit={() => update_participant(new_participant)}>
+	<form on:submit|preventDefault={() => update_participant(new_participant)}>
 		<label>
 			<input type="text" placeholder="John" bind:value={new_participant.first_name} />
 			<span>First Name</span>

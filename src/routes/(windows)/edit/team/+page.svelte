@@ -29,7 +29,7 @@
 </script>
 
 {#await get_team() then team}
-	<form on:submit={() => update_team(new_team)}>
+	<form on:submit|preventDefault={() => update_team(new_team)}>
 		<label>
 			<input type="text" placeholder="An Amazing Team" bind:value={new_team.name} />
 			<span>Team Name</span>

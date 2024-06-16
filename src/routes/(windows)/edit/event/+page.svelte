@@ -22,7 +22,7 @@
 </script>
 
 {#await get_event() then}
-	<form on:submit={() => update_event(new_event)}>
+	<form on:submit|preventDefault={() => update_event(new_event)}>
 		<label>
 			<input type="text" placeholder="Speedreading" bind:value={new_event.name} />
 			<span>Name</span>

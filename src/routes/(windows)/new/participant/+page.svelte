@@ -22,7 +22,7 @@
 		else if (teams.length === 1) {
 			team_selector_enabled = false;
 		}
-		return teams!;
+		return teams!.filter((t) => !t.individual);
 	}
 </script>
 

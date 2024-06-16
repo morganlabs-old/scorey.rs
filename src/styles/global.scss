@@ -1,43 +1,43 @@
 *,
 *::before,
 *::after {
-	padding: 0;
-	margin: 0;
-	box-sizing: border-box;
-	overflow: hidden;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 
-	font-family: 'SF Pro', sans-serif;
+  font-family: 'SF Pro', sans-serif;
 }
 
 button {
-	padding: 7px 3px;
+  padding: 7px 3px;
 }
 
 form {
-	label {
-		display: grid;
-		grid-template-columns: 1fr auto;
-		column-gap: 2rem;
-		align-items: center;
-		border-bottom: 1px solid rgba(#000000, 0.05);
-		padding-block: 10px;
-		padding-inline: 3px;
+  label {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 2rem;
+    align-items: center;
+    border-bottom: 1px solid rgba(#000000, 0.05);
+    padding-block: 10px;
+    padding-inline: 3px;
 
-		& *:not(button) {
-			font-size: 0.8125rem;
-		}
+    & *:not(button) {
+      font-size: 0.8125rem;
+    }
 
-		& *:nth-child(2) {
-			text-align: right;
-			opacity: 0.5;
-		}
+    & *:nth-child(2) {
+      text-align: right;
+      opacity: 0.5;
+    }
 
-		input {
-			border: none;
-		}
+    input {
+      border: none;
+    }
 
-		button {
-			max-width: fit-content;
-		}
-	}
+    button {
+      max-width: fit-content;
+    }
+  }
 }

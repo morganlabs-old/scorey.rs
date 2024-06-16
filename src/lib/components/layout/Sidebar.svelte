@@ -43,6 +43,7 @@
 		width: auto;
 		height: 14px;
 		aspect-ratio: 1;
+		overflow-y: hidden;
 	}
 
 	.icon {

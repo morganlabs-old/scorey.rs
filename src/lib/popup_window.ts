@@ -24,7 +24,7 @@ export function new_popup_window(
         alert('Failed to create new window.\nPlease check console for more information.');
         console.error('Failed to create window', e);
     });
-    webview.once('tauri://close-requested', () => location.reload());
+    webview.once('tauri://close-requested', () => setTimeout(() => location.reload(), 60 * 0.25));
 
     return webview;
 }

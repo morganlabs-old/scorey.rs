@@ -1,6 +1,10 @@
 # Scorey
 
-Welcome to Scorey, a simple, Rust and Svelte application to keep track of scores.
+Scorey is a Tauri and SvelteKit application used to keep track of teams,
+participants, events, and most importantly, scores!
+
+Scorey was built as my final submission for my Information Technology Level 3
+Course in College.
 
 ## Documentation
 

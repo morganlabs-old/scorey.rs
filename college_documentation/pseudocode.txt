@@ -1,0 +1,48 @@
+function startup() {
+  create_database_file();
+  embed_migrations!();
+}
+
+function leaderboard() {
+  teams = get_all_teams();
+  sort_by_points;
+  Render teams;
+}
+
+function participants() {
+  switch (Action) {
+    View => get_participants();
+    Edit => edit_participant(updated_participant);
+    Add => new_participant(first_name, last_name, team_id);
+    Delete => delete_participant(participant_id);
+  }
+}
+
+function teams() {
+  switch (Action) {
+    View => get_teams();
+    Edit => edit_team(updated_team);
+    Add => {
+      new_team(name, is_individual);
+      new_participant(first_name, last_name, new_team_id)
+    }
+    Delete => delete_team(team_id);
+  }
+}
+
+function events() {
+  switch (Action) {
+    View => get_events();
+    Edit => edit_event(updated_event);
+    Add => new_event(name, type);
+    Delete => delete_event(event_id);
+  }
+}
+
+function event_entries() {
+    switch (Action) {
+    View => get_event_for_team(team_id);
+    Add => enroll_team_in_event(team_id, event_id);
+    Delete => unenroll_team_in_event(team_id, event_id);
+  }
+}

@@ -4,7 +4,7 @@
 
 [Download the latest release](../../releases/latest) or [Run from Source](#running-from-source)
 
-> Submitted for my BTEC Level 3 Information Technology course in college. This project has been archived and unmodified since submitting it.
+> Submitted for my BTEC Level 3 Information Technology course in college. This project has been archived and unmodified since submitting it. \*This is the Original branch. You can view the final submission [here](../../tree/resubmission).
 
 Scorey is a desktop application built with Rust and Tauri 1.5.14. I was assigned to build a desktop application to track the scores of different teams in different sports. Scorey lets you add participants, teams, and events. You can link teams to events, and then give teams scores!
 
